@@ -1,5 +1,52 @@
 # Changelog
 
+## v1.2.0 - 2026-06-26
+
+### Added
+
+- Add Camera Raw style Color Grading with Shadows, Midtones, and Highlights color wheels.
+- Add per-zone color grading luminance controls plus global Blending and Balance controls.
+- Add per-parameter reset buttons for every adjustable slider.
+- Add per-wheel reset buttons for color grading Hue and Saturation.
+- Add direct numeric editing for every slider value.
+- Add a fixed top preview window and fixed bottom global Reset bar.
+
+### Changed
+
+- Replace the CSS color wheel approximation with canvas-rendered HSV color wheels.
+- Rework Color Grading layout into vertically stacked rows with larger wheels and aligned luminance controls.
+- Remove the manual Apply button and rely on realtime auto-apply.
+- Expand the plugin window height for the larger editing surface.
+- Hide the side scrollbar while preserving parameter panel scrolling.
+
+### Fixed
+
+- Prevent stale auto-apply responses from rolling edited values back.
+- Improve preview responsiveness by rendering a lower-resolution preview while keeping full-resolution export for MasterGo.
+- Make the fixed preview background fully opaque so controls do not show through.
+- Move status helper text away from the selected-layer status card.
+
+### Development log
+
+- Planned Color Grading after reviewing Camera Raw's Shadows, Midtones, Highlights, Blending, and Balance model.
+- Implemented Color Grading parameters, persistence, and reset compatibility.
+- Added three color wheels for Shadows, Midtones, and Highlights.
+- Replaced the first CSS-gradient wheel with a canvas-rendered HSV wheel after visual review showed incorrect color distribution.
+- Changed Color Grading layout from three horizontal wheels to vertically stacked rows with larger wheels and aligned luminance sliders.
+- Added individual reset buttons for every adjustable slider.
+- Added individual reset buttons for each Color Grading wheel's Hue and Saturation.
+- Added direct numeric editing by clicking each displayed slider value.
+- Investigated preview lag and value rollback during fast edits.
+- Added edit-version guarding so stale auto-apply responses cannot overwrite newer local values.
+- Split preview rendering and export rendering so preview uses a smaller canvas while export keeps full image size.
+- Fixed the preview panel at the top of the plugin window.
+- Made the preview panel fully opaque so parameter text cannot show through transparent areas.
+- Fixed the global Reset control at the bottom of the plugin window.
+- Removed the manual Apply button because realtime auto-apply is now the primary workflow.
+- Expanded the plugin window height to make room for the fixed preview and dense controls.
+- Hid the side scrollbar while preserving scrollable controls.
+- Moved status helper text out of the selected-layer card and into the footer/debug status area.
+
 ## v1.1.0 - 2026-06-26
 
 ### Added

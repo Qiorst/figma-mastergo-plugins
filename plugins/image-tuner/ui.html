@@ -22,7 +22,8 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       background: var(--bg);
       color: var(--text);
       font: 12px/1.45 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -32,7 +33,14 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding: 14px;
+      height: 100vh;
+      padding: 240px 14px 72px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .app::-webkit-scrollbar {
+      display: none;
     }
 
     .header {
@@ -81,27 +89,49 @@
     }
 
     .preview {
-      position: relative;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 10;
       display: grid;
       place-items: center;
-      min-height: 190px;
-      max-height: 240px;
+      height: 226px;
+      padding: 12px;
       overflow: hidden;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 0;
+      background-color: #f6f7f8;
       background:
         linear-gradient(45deg, #e8ebef 25%, transparent 25%),
         linear-gradient(-45deg, #e8ebef 25%, transparent 25%),
         linear-gradient(45deg, transparent 75%, #e8ebef 75%),
-        linear-gradient(-45deg, transparent 75%, #e8ebef 75%);
+        linear-gradient(-45deg, transparent 75%, #e8ebef 75%),
+        #f6f7f8;
       background-position: 0 0, 0 8px, 8px -8px, -8px 0;
       background-size: 16px 16px;
+      box-shadow: 0 12px 30px rgba(31, 35, 40, 0.18);
+    }
+
+    .preview::before {
+      content: "Preview";
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      z-index: 1;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 650;
+      pointer-events: none;
     }
 
     canvas {
       display: block;
       max-width: 100%;
-      max-height: 238px;
+      max-height: 200px;
     }
 
     .empty {
@@ -131,7 +161,7 @@
 
     .control {
       display: grid;
-      grid-template-columns: 82px 1fr 44px;
+      grid-template-columns: 82px 1fr 44px 26px;
       align-items: center;
       gap: 10px;
     }
@@ -150,12 +180,131 @@
       color: var(--muted);
       font-variant-numeric: tabular-nums;
       text-align: right;
+      min-height: 24px;
+      padding: 3px 4px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: text;
+      outline: none;
+    }
+
+    output:hover,
+    output:focus {
+      border-color: var(--line);
+      background: #f9fafb;
+      color: var(--text);
+    }
+
+    .grading-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .grading-wheel-card {
+      display: grid;
+      grid-template-columns: 62px 118px 1fr;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .grading-wheel-label {
+      display: grid;
+      grid-template-columns: 1fr 24px;
+      align-items: start;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .grading-wheel-title {
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 650;
+      grid-column: 1 / -1;
+    }
+
+    .color-wheel {
+      position: relative;
+      width: 118px;
+      height: 118px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+      cursor: crosshair;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .color-wheel.disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .color-wheel-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    .wheel-handle {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 2;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #667085;
+      box-shadow: 0 0 0 1px rgba(31, 35, 40, 0.65);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .wheel-meta {
+      color: var(--muted);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.3;
+    }
+
+    .grading-luma {
+      display: grid;
+      grid-template-columns: 1fr 34px 26px;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .reset-param {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      padding: 0;
+      border-radius: 50%;
+      color: var(--muted);
+      line-height: 1;
     }
 
     .actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 11;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr;
+      height: 58px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--panel);
+      box-shadow: 0 12px 30px rgba(31, 35, 40, 0.18);
     }
 
     button {
@@ -210,31 +359,37 @@
         <label for="exposure" data-i18n="exposure">曝光</label>
         <input id="exposure" type="range" min="-100" max="100" value="0" />
         <output for="exposure">0</output>
+        <button class="reset-param" type="button" data-reset-param="exposure" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="contrast" data-i18n="contrast">对比度</label>
         <input id="contrast" type="range" min="-100" max="100" value="0" />
         <output for="contrast">0</output>
+        <button class="reset-param" type="button" data-reset-param="contrast" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="highlights" data-i18n="highlights">高光</label>
         <input id="highlights" type="range" min="-100" max="100" value="0" />
         <output for="highlights">0</output>
+        <button class="reset-param" type="button" data-reset-param="highlights" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="shadows" data-i18n="shadows">阴影</label>
         <input id="shadows" type="range" min="-100" max="100" value="0" />
         <output for="shadows">0</output>
+        <button class="reset-param" type="button" data-reset-param="shadows" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="whites" data-i18n="whites">白色色阶</label>
         <input id="whites" type="range" min="-100" max="100" value="0" />
         <output for="whites">0</output>
+        <button class="reset-param" type="button" data-reset-param="whites" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="blacks" data-i18n="blacks">黑色色阶</label>
         <input id="blacks" type="range" min="-100" max="100" value="0" />
         <output for="blacks">0</output>
+        <button class="reset-param" type="button" data-reset-param="blacks" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
     </section>
 
@@ -244,26 +399,97 @@
         <label for="temperature" data-i18n="temperature">色温</label>
         <input id="temperature" type="range" min="-100" max="100" value="0" />
         <output for="temperature">0</output>
+        <button class="reset-param" type="button" data-reset-param="temperature" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="tint" data-i18n="tint">色调</label>
         <input id="tint" type="range" min="-100" max="100" value="0" />
         <output for="tint">0</output>
+        <button class="reset-param" type="button" data-reset-param="tint" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="vibrance" data-i18n="vibrance">自然饱和度</label>
         <input id="vibrance" type="range" min="-100" max="100" value="0" />
         <output for="vibrance">0</output>
+        <button class="reset-param" type="button" data-reset-param="vibrance" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="saturation" data-i18n="saturation">饱和度</label>
         <input id="saturation" type="range" min="-100" max="100" value="0" />
         <output for="saturation">0</output>
+        <button class="reset-param" type="button" data-reset-param="saturation" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="hue" data-i18n="hue">色相</label>
         <input id="hue" type="range" min="-180" max="180" value="0" />
         <output for="hue">0</output>
+        <button class="reset-param" type="button" data-reset-param="hue" title="Reset" aria-label="Reset parameter">&#8634;</button>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Color grading controls">
+      <div class="group-title" data-i18n="colorGrading">颜色分级</div>
+      <div class="grading-grid">
+        <div class="grading-wheel-card">
+          <div class="grading-wheel-label">
+            <div class="grading-wheel-title" data-i18n="cgShadows">阴影</div>
+            <div class="wheel-meta" data-wheel-meta="shadows">H 0 / S 0</div>
+            <button class="reset-param" type="button" data-reset-wheel="shadows" title="Reset" aria-label="Reset shadow color grade">&#8634;</button>
+          </div>
+          <div class="color-wheel" data-wheel="shadows" role="slider" tabindex="0" aria-label="Shadow color grade">
+            <canvas class="color-wheel-canvas" width="164" height="164" aria-hidden="true"></canvas>
+            <span class="wheel-handle"></span>
+          </div>
+          <div class="grading-luma">
+            <input id="cgShadowsLuminance" type="range" min="-100" max="100" value="0" />
+            <output for="cgShadowsLuminance">0</output>
+            <button class="reset-param" type="button" data-reset-param="cgShadowsLuminance" title="Reset" aria-label="Reset parameter">&#8634;</button>
+          </div>
+        </div>
+        <div class="grading-wheel-card">
+          <div class="grading-wheel-label">
+            <div class="grading-wheel-title" data-i18n="cgMidtones">中间调</div>
+            <div class="wheel-meta" data-wheel-meta="midtones">H 0 / S 0</div>
+            <button class="reset-param" type="button" data-reset-wheel="midtones" title="Reset" aria-label="Reset midtone color grade">&#8634;</button>
+          </div>
+          <div class="color-wheel" data-wheel="midtones" role="slider" tabindex="0" aria-label="Midtone color grade">
+            <canvas class="color-wheel-canvas" width="164" height="164" aria-hidden="true"></canvas>
+            <span class="wheel-handle"></span>
+          </div>
+          <div class="grading-luma">
+            <input id="cgMidtonesLuminance" type="range" min="-100" max="100" value="0" />
+            <output for="cgMidtonesLuminance">0</output>
+            <button class="reset-param" type="button" data-reset-param="cgMidtonesLuminance" title="Reset" aria-label="Reset parameter">&#8634;</button>
+          </div>
+        </div>
+        <div class="grading-wheel-card">
+          <div class="grading-wheel-label">
+            <div class="grading-wheel-title" data-i18n="cgHighlights">高光</div>
+            <div class="wheel-meta" data-wheel-meta="highlights">H 0 / S 0</div>
+            <button class="reset-param" type="button" data-reset-wheel="highlights" title="Reset" aria-label="Reset highlight color grade">&#8634;</button>
+          </div>
+          <div class="color-wheel" data-wheel="highlights" role="slider" tabindex="0" aria-label="Highlight color grade">
+            <canvas class="color-wheel-canvas" width="164" height="164" aria-hidden="true"></canvas>
+            <span class="wheel-handle"></span>
+          </div>
+          <div class="grading-luma">
+            <input id="cgHighlightsLuminance" type="range" min="-100" max="100" value="0" />
+            <output for="cgHighlightsLuminance">0</output>
+            <button class="reset-param" type="button" data-reset-param="cgHighlightsLuminance" title="Reset" aria-label="Reset parameter">&#8634;</button>
+          </div>
+        </div>
+      </div>
+      <div class="control">
+        <label for="cgBlending" data-i18n="cgBlending">混合</label>
+        <input id="cgBlending" type="range" min="0" max="100" value="50" />
+        <output for="cgBlending">50</output>
+        <button class="reset-param" type="button" data-reset-param="cgBlending" title="Reset" aria-label="Reset parameter">&#8634;</button>
+      </div>
+      <div class="control">
+        <label for="cgBalance" data-i18n="cgBalance">平衡</label>
+        <input id="cgBalance" type="range" min="-100" max="100" value="0" />
+        <output for="cgBalance">0</output>
+        <button class="reset-param" type="button" data-reset-param="cgBalance" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
     </section>
 
@@ -273,17 +499,18 @@
         <label for="grain" data-i18n="grain">颗粒</label>
         <input id="grain" type="range" min="0" max="100" value="0" />
         <output for="grain">0</output>
+        <button class="reset-param" type="button" data-reset-param="grain" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
       <div class="control">
         <label for="vignette" data-i18n="vignette">暗角</label>
         <input id="vignette" type="range" min="-100" max="100" value="0" />
         <output for="vignette">0</output>
+        <button class="reset-param" type="button" data-reset-param="vignette" title="Reset" aria-label="Reset parameter">&#8634;</button>
       </div>
     </section>
 
     <section class="actions">
       <button id="resetButton" type="button" data-i18n="reset">重置</button>
-      <button id="applyButton" class="primary" type="button" disabled data-i18n="apply">应用</button>
     </section>
 
     <div id="debug" class="footer">界面已加载，等待插件主程序...</div>
@@ -306,6 +533,17 @@
         vibrance: 0,
         saturation: 0,
         hue: 0,
+        cgShadowsHue: 0,
+        cgShadowsSaturation: 0,
+        cgShadowsLuminance: 0,
+        cgMidtonesHue: 0,
+        cgMidtonesSaturation: 0,
+        cgMidtonesLuminance: 0,
+        cgHighlightsHue: 0,
+        cgHighlightsSaturation: 0,
+        cgHighlightsLuminance: 0,
+        cgBlending: 50,
+        cgBalance: 0,
         grain: 0,
         vignette: 0
       },
@@ -313,6 +551,8 @@
       isApplying: false,
       queuedAutoApply: false,
       autoApplyTimer: null,
+      editVersion: 0,
+      applyingVersion: 0,
       renderToken: 0,
       language: "zh",
       statusKey: "selectOne",
@@ -336,11 +576,16 @@
         vibrance: "自然饱和度",
         saturation: "饱和度",
         hue: "色相",
+        colorGrading: "颜色分级",
+        cgShadows: "阴影",
+        cgMidtones: "中间调",
+        cgHighlights: "高光",
+        cgBlending: "混合",
+        cgBalance: "平衡",
         effects: "效果",
         grain: "颗粒",
         vignette: "暗角",
         reset: "重置",
-        apply: "应用",
         applying: "应用中",
         imageLoaded: "图片已加载",
         selectedLayer: "已选择图层",
@@ -359,7 +604,6 @@
         uiWaiting: "界面已加载，等待插件主程序...",
         uiRefreshSent: "界面已加载，已请求读取选中图层。",
         autoApplying: "正在自动应用...",
-        manualApplying: "正在应用...",
         applyFailed: "应用失败。",
         imageReadFailed: "图片读取失败。",
         imageBytesMissing: "插件宿主没有返回图片数据。",
@@ -382,11 +626,16 @@
         vibrance: "Vibrance",
         saturation: "Saturation",
         hue: "Hue",
+        colorGrading: "Color grading",
+        cgShadows: "Shadows",
+        cgMidtones: "Midtones",
+        cgHighlights: "Highlights",
+        cgBlending: "Blending",
+        cgBalance: "Balance",
         effects: "Effects",
         grain: "Grain",
         vignette: "Vignette",
         reset: "Reset",
-        apply: "Apply",
         applying: "Applying",
         imageLoaded: "Image loaded",
         selectedLayer: "Selected layer",
@@ -405,7 +654,6 @@
         uiWaiting: "UI loaded. Waiting for plugin main...",
         uiRefreshSent: "UI loaded. Sent refresh-selection.",
         autoApplying: "Auto applying...",
-        manualApplying: "Applying...",
         applyFailed: "Apply failed.",
         imageReadFailed: "Image read failed.",
         imageBytesMissing: "No image bytes were received from the plugin host.",
@@ -417,13 +665,23 @@
     const statusEl = document.getElementById("status");
     const canvas = document.getElementById("canvas");
     const context = canvas.getContext("2d", { willReadFrequently: true });
+    const exportCanvas = document.createElement("canvas");
+    const exportContext = exportCanvas.getContext("2d", { willReadFrequently: true });
     const emptyEl = document.getElementById("empty");
-    const applyButton = document.getElementById("applyButton");
     const resetButton = document.getElementById("resetButton");
     const refreshButton = document.getElementById("refreshButton");
     const languageButton = document.getElementById("languageButton");
     const debugEl = document.getElementById("debug");
     const controls = Array.from(document.querySelectorAll("input[type='range']"));
+    const numericOutputs = Array.from(document.querySelectorAll("output[for]"));
+    const colorWheels = Array.from(document.querySelectorAll(".color-wheel"));
+    const resetParamButtons = Array.from(document.querySelectorAll("[data-reset-param]"));
+    const resetWheelButtons = Array.from(document.querySelectorAll("[data-reset-wheel]"));
+    const wheelChannelMap = {
+      shadows: { hue: "cgShadowsHue", saturation: "cgShadowsSaturation" },
+      midtones: { hue: "cgMidtonesHue", saturation: "cgMidtonesSaturation" },
+      highlights: { hue: "cgHighlightsHue", saturation: "cgHighlightsSaturation" }
+    };
 
     function t(key) {
       const dictionary = translations[state.language] || translations.zh;
@@ -501,24 +759,87 @@
       } else {
         const title = document.createElement("strong");
         title.textContent = state.nodeName || t("imageLoaded");
-        statusEl.append(title, translatedMessage);
+        statusEl.append(title);
+        if (translatedMessage) debugEl.textContent = translatedMessage;
       }
     }
 
     function setControlsEnabled(enabled) {
       controls.forEach((control) => { control.disabled = !enabled; });
-      applyButton.disabled = !enabled;
+      numericOutputs.forEach((output) => {
+        output.contentEditable = enabled ? "true" : "false";
+        output.setAttribute("aria-disabled", enabled ? "false" : "true");
+      });
+      resetParamButtons.forEach((button) => { button.disabled = !enabled; });
+      resetWheelButtons.forEach((button) => { button.disabled = !enabled; });
+      colorWheels.forEach((wheel) => {
+        wheel.classList.toggle("disabled", !enabled);
+        wheel.setAttribute("aria-disabled", enabled ? "false" : "true");
+      });
       resetButton.disabled = !enabled;
     }
 
     function updateOutputs() {
       controls.forEach((control) => { control.nextElementSibling.value = control.value; });
+      updateColorWheels();
     }
 
     function resetValues() {
       state.values = getDefaultValues();
       controls.forEach((control) => { control.value = state.values[control.id]; });
       updateOutputs();
+    }
+
+    function applyValueChange() {
+      state.editVersion += 1;
+      updateOutputs();
+      renderPreview();
+      scheduleAutoApply();
+    }
+
+    function resetParameter(param) {
+      const defaults = getDefaultValues();
+      if (!(param in defaults)) return;
+      state.values[param] = defaults[param];
+      const control = document.getElementById(param);
+      if (control) control.value = state.values[param];
+      applyValueChange();
+    }
+
+    function resetWheel(channel) {
+      const keys = wheelChannelMap[channel];
+      if (!keys) return;
+      state.values[keys.hue] = 0;
+      state.values[keys.saturation] = 0;
+      applyValueChange();
+    }
+
+    function clampToControl(control, value) {
+      const min = Number(control.min);
+      const max = Number(control.max);
+      const step = Number(control.step) || 1;
+      let next = Number.isFinite(value) ? value : Number(control.value) || 0;
+      if (Number.isFinite(min)) next = Math.max(min, next);
+      if (Number.isFinite(max)) next = Math.min(max, next);
+      if (step >= 1) next = Math.round(next);
+      return next;
+    }
+
+    function commitOutputEdit(output) {
+      const control = document.getElementById(output.getAttribute("for"));
+      if (!control) return;
+      const raw = output.textContent.trim().replace(/[^\d.-]/g, "");
+      const parsed = Number(raw);
+      const next = clampToControl(control, parsed);
+      control.value = next;
+      state.values[control.id] = next;
+      applyValueChange();
+    }
+
+    function cancelOutputEdit(output) {
+      const control = document.getElementById(output.getAttribute("for"));
+      if (control) output.textContent = control.value;
+      output.blur();
     }
 
     function getDefaultValues() {
@@ -534,6 +855,17 @@
         vibrance: 0,
         saturation: 0,
         hue: 0,
+        cgShadowsHue: 0,
+        cgShadowsSaturation: 0,
+        cgShadowsLuminance: 0,
+        cgMidtonesHue: 0,
+        cgMidtonesSaturation: 0,
+        cgMidtonesLuminance: 0,
+        cgHighlightsHue: 0,
+        cgHighlightsSaturation: 0,
+        cgHighlightsLuminance: 0,
+        cgBlending: 50,
+        cgBalance: 0,
         grain: 0,
         vignette: 0
       };
@@ -550,6 +882,100 @@
       state.values = next;
       controls.forEach((control) => { control.value = state.values[control.id]; });
       updateOutputs();
+    }
+
+    function hueToRgb(hue, saturation) {
+      const chroma = saturation / 100;
+      const h = ((hue % 360) + 360) % 360 / 60;
+      const x = chroma * (1 - Math.abs((h % 2) - 1));
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      if (h < 1) [r, g, b] = [chroma, x, 0];
+      else if (h < 2) [r, g, b] = [x, chroma, 0];
+      else if (h < 3) [r, g, b] = [0, chroma, x];
+      else if (h < 4) [r, g, b] = [0, x, chroma];
+      else if (h < 5) [r, g, b] = [x, 0, chroma];
+      else [r, g, b] = [chroma, 0, x];
+      const match = 1 - chroma;
+      return [(r + match) * 255, (g + match) * 255, (b + match) * 255];
+    }
+
+    function drawColorWheelCanvas(canvasElement) {
+      const size = canvasElement.width;
+      const radius = size / 2;
+      const context2d = canvasElement.getContext("2d");
+      const imageData = context2d.createImageData(size, size);
+      const data = imageData.data;
+      for (let y = 0; y < size; y += 1) {
+        for (let x = 0; x < size; x += 1) {
+          const dx = x + 0.5 - radius;
+          const dy = y + 0.5 - radius;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const index = (y * size + x) * 4;
+          if (distance > radius - 1) {
+            data[index + 3] = 0;
+            continue;
+          }
+          const hue = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
+          const saturationValue = Math.max(0, Math.min(100, distance / (radius - 1) * 100));
+          const [r, g, b] = hueToRgb(hue, saturationValue);
+          data[index] = r;
+          data[index + 1] = g;
+          data[index + 2] = b;
+          data[index + 3] = 255;
+        }
+      }
+      context2d.putImageData(imageData, 0, 0);
+    }
+
+    function drawColorWheels() {
+      colorWheels.forEach((wheel) => {
+        const wheelCanvas = wheel.querySelector(".color-wheel-canvas");
+        if (wheelCanvas) drawColorWheelCanvas(wheelCanvas);
+      });
+    }
+
+    function updateColorWheels() {
+      colorWheels.forEach((wheel) => {
+        const channel = wheel.dataset.wheel;
+        const keys = wheelChannelMap[channel];
+        if (!keys) return;
+        const hue = Number(state.values[keys.hue]) || 0;
+        const saturationValue = Number(state.values[keys.saturation]) || 0;
+        const angle = (hue - 90) * Math.PI / 180;
+        const wheelRadius = wheel.clientWidth / 2 - 7;
+        const radius = Math.max(0, Math.min(1, saturationValue / 100)) * wheelRadius;
+        const handle = wheel.querySelector(".wheel-handle");
+        if (handle) {
+          const [r, g, b] = hueToRgb(hue, saturationValue);
+          handle.style.left = `${wheel.clientWidth / 2 + Math.cos(angle) * radius}px`;
+          handle.style.top = `${wheel.clientHeight / 2 + Math.sin(angle) * radius}px`;
+          handle.style.background = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+        }
+        wheel.setAttribute("aria-valuetext", `Hue ${Math.round(hue)}, Saturation ${Math.round(saturationValue)}`);
+        const meta = document.querySelector(`[data-wheel-meta="${channel}"]`);
+        if (meta) meta.textContent = `H ${Math.round(hue)} / S ${Math.round(saturationValue)}`;
+      });
+    }
+
+    function setWheelValue(wheel, clientX, clientY) {
+      if (wheel.getAttribute("aria-disabled") === "true") return;
+      const channel = wheel.dataset.wheel;
+      const keys = wheelChannelMap[channel];
+      if (!keys) return;
+      const rect = wheel.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = clientX - cx;
+      const dy = clientY - cy;
+      const maxRadius = rect.width / 2 - 7;
+      const distance = Math.min(maxRadius, Math.sqrt(dx * dx + dy * dy));
+      const hue = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
+      const saturationValue = Math.round(distance / maxRadius * 100);
+      state.values[keys.hue] = Math.round(hue);
+      state.values[keys.saturation] = saturationValue;
+      applyValueChange();
     }
 
     function hueRotate(r, g, b, degrees) {
@@ -587,6 +1013,62 @@
     function pseudoRandom(x, y) {
       const seed = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
       return seed - Math.floor(seed);
+    }
+
+    function getGradingWeights(luminance) {
+      const blending = Math.max(0, Math.min(100, state.values.cgBlending)) / 100;
+      const balance = Math.max(-100, Math.min(100, state.values.cgBalance)) / 100;
+      const spread = 0.16 + blending * 0.28;
+      const shadowCenter = 0.18 + balance * 0.18;
+      const highlightCenter = 0.82 + balance * 0.18;
+      const midCenter = 0.5 + balance * 0.08;
+      const shadow = Math.max(0, 1 - Math.abs(luminance - shadowCenter) / (spread + 0.18));
+      const midtone = Math.max(0, 1 - Math.abs(luminance - midCenter) / (spread + 0.12));
+      const highlight = Math.max(0, 1 - Math.abs(luminance - highlightCenter) / (spread + 0.18));
+      const total = shadow + midtone + highlight || 1;
+      return {
+        shadows: shadow / total,
+        midtones: midtone / total,
+        highlights: highlight / total
+      };
+    }
+
+    function applyGradeChannel(r, g, b, weight, hue, saturationValue, luminanceValue) {
+      if (weight <= 0) return [r, g, b];
+      const amount = saturationValue / 100 * weight;
+      const [tr, tg, tb] = hueToRgb(hue, 100);
+      const lift = luminanceValue * 1.4 * weight;
+      return [
+        r + (tr - 128) * amount * 0.55 + lift,
+        g + (tg - 128) * amount * 0.55 + lift,
+        b + (tb - 128) * amount * 0.55 + lift
+      ];
+    }
+
+    function applyColorGrading(r, g, b, luminance) {
+      const weights = getGradingWeights(luminance);
+      [r, g, b] = applyGradeChannel(
+        r, g, b,
+        weights.shadows,
+        state.values.cgShadowsHue,
+        state.values.cgShadowsSaturation,
+        state.values.cgShadowsLuminance
+      );
+      [r, g, b] = applyGradeChannel(
+        r, g, b,
+        weights.midtones,
+        state.values.cgMidtonesHue,
+        state.values.cgMidtonesSaturation,
+        state.values.cgMidtonesLuminance
+      );
+      [r, g, b] = applyGradeChannel(
+        r, g, b,
+        weights.highlights,
+        state.values.cgHighlightsHue,
+        state.values.cgHighlightsSaturation,
+        state.values.cgHighlightsLuminance
+      );
+      return [r, g, b];
     }
 
     function applyColorAdjustments(imageData) {
@@ -638,6 +1120,9 @@
         g = gray + (g - gray) * finalSaturation;
         b = gray + (b - gray) * finalSaturation;
 
+        const gradedGray = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 255;
+        [r, g, b] = applyColorGrading(r, g, b, gradedGray);
+
         if (grainAmount > 0) {
           const noise = (pseudoRandom(x, y) - 0.5) * grainAmount;
           r += noise;
@@ -669,13 +1154,28 @@
       const token = ++state.renderToken;
       requestAnimationFrame(() => {
         if (token !== state.renderToken) return;
-        canvas.width = state.image.naturalWidth || state.image.width;
-        canvas.height = state.image.naturalHeight || state.image.height;
+        const sourceWidth = state.image.naturalWidth || state.image.width;
+        const sourceHeight = state.image.naturalHeight || state.image.height;
+        const maxPreviewEdge = 720;
+        const scale = Math.min(1, maxPreviewEdge / Math.max(sourceWidth, sourceHeight));
+        canvas.width = Math.max(1, Math.round(sourceWidth * scale));
+        canvas.height = Math.max(1, Math.round(sourceHeight * scale));
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(state.image, 0, 0);
+        context.drawImage(state.image, 0, 0, canvas.width, canvas.height);
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         context.putImageData(applyColorAdjustments(imageData), 0, 0);
       });
+    }
+
+    function renderExport() {
+      const sourceWidth = state.image.naturalWidth || state.image.width;
+      const sourceHeight = state.image.naturalHeight || state.image.height;
+      exportCanvas.width = sourceWidth;
+      exportCanvas.height = sourceHeight;
+      exportContext.clearRect(0, 0, exportCanvas.width, exportCanvas.height);
+      exportContext.drawImage(state.image, 0, 0);
+      const imageData = exportContext.getImageData(0, 0, exportCanvas.width, exportCanvas.height);
+      exportContext.putImageData(applyColorAdjustments(imageData), 0, 0);
     }
 
     function loadImageFromBytes(rawBytes) {
@@ -705,7 +1205,7 @@
 
     function canvasToBytes() {
       return new Promise((resolve, reject) => {
-        canvas.toBlob(async (blob) => {
+        exportCanvas.toBlob(async (blob) => {
           if (!blob) {
             reject(new Error("imageExportFailed"));
             return;
@@ -715,32 +1215,25 @@
       });
     }
 
-    async function sendApply(mode = "manual") {
+    async function sendApply(mode = "auto") {
       if (!state.image || state.isApplying) {
         if (mode === "auto") state.queuedAutoApply = true;
         return;
       }
 
+      const applyVersion = state.editVersion;
       state.isApplying = true;
-      if (mode === "manual") {
-        applyButton.disabled = true;
-        applyButton.textContent = t("applying");
-      }
+      state.applyingVersion = applyVersion;
 
       try {
-        renderPreview();
-        await new Promise((resolve) => requestAnimationFrame(resolve));
+        renderExport();
         const bytes = await canvasToBytes();
         state.pendingAppliedBytes = bytes;
-        debugEl.textContent = mode === "auto" ? t("autoApplying") : t("manualApplying");
-        post({ type: "apply-image", bytes, params: state.values, mode });
+        debugEl.textContent = t("autoApplying");
+        post({ type: "apply-image", bytes, params: state.values, mode, version: applyVersion });
       } catch (error) {
         state.isApplying = false;
         setStatus(error.message || "applyFailed", true);
-        if (mode === "manual") {
-          applyButton.textContent = t("apply");
-          applyButton.disabled = false;
-        }
       }
     }
 
@@ -754,9 +1247,79 @@
     controls.forEach((control) => {
       control.addEventListener("input", () => {
         state.values[control.id] = Number(control.value);
-        updateOutputs();
-        renderPreview();
-        scheduleAutoApply();
+        applyValueChange();
+      });
+    });
+
+    numericOutputs.forEach((output) => {
+      output.setAttribute("tabindex", "0");
+      output.setAttribute("role", "spinbutton");
+      output.addEventListener("focus", () => {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(output);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      });
+      output.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commitOutputEdit(output);
+          output.blur();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          cancelOutputEdit(output);
+        }
+      });
+      output.addEventListener("blur", () => {
+        commitOutputEdit(output);
+      });
+    });
+
+    resetParamButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        resetParameter(button.dataset.resetParam);
+      });
+    });
+
+    resetWheelButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        resetWheel(button.dataset.resetWheel);
+      });
+    });
+
+    colorWheels.forEach((wheel) => {
+      let dragging = false;
+      wheel.addEventListener("pointerdown", (event) => {
+        dragging = true;
+        wheel.setPointerCapture(event.pointerId);
+        setWheelValue(wheel, event.clientX, event.clientY);
+      });
+      wheel.addEventListener("pointermove", (event) => {
+        if (!dragging) return;
+        setWheelValue(wheel, event.clientX, event.clientY);
+      });
+      wheel.addEventListener("pointerup", (event) => {
+        dragging = false;
+        if (wheel.hasPointerCapture(event.pointerId)) wheel.releasePointerCapture(event.pointerId);
+      });
+      wheel.addEventListener("pointercancel", () => {
+        dragging = false;
+      });
+      wheel.addEventListener("keydown", (event) => {
+        if (wheel.getAttribute("aria-disabled") === "true") return;
+        const channel = wheel.dataset.wheel;
+        const keys = wheelChannelMap[channel];
+        if (!keys) return;
+        let handled = true;
+        if (event.key === "ArrowLeft") state.values[keys.hue] = (state.values[keys.hue] + 359) % 360;
+        else if (event.key === "ArrowRight") state.values[keys.hue] = (state.values[keys.hue] + 1) % 360;
+        else if (event.key === "ArrowDown") state.values[keys.saturation] = Math.max(0, state.values[keys.saturation] - 1);
+        else if (event.key === "ArrowUp") state.values[keys.saturation] = Math.min(100, state.values[keys.saturation] + 1);
+        else handled = false;
+        if (!handled) return;
+        event.preventDefault();
+        applyValueChange();
       });
     });
 
@@ -776,10 +1339,6 @@
 
     languageButton.addEventListener("click", () => {
       setLanguage(state.language === "zh" ? "en" : "zh");
-    });
-
-    applyButton.addEventListener("click", async () => {
-      sendApply("manual");
     });
 
     window.onmessage = async (event) => {
@@ -803,8 +1362,6 @@
         debugEl.textContent = message.detail || t("noDiagnostics");
         if (!message.ok && message.source === "apply") {
           state.isApplying = false;
-          applyButton.textContent = t("apply");
-          applyButton.disabled = false;
         }
         if (message.ok) {
           state.nodeName = message.title || t("selectedLayer");
@@ -844,13 +1401,15 @@
       }
 
       if (message.type === "apply-complete") {
+        const isCurrentApply = message.version === state.applyingVersion && message.version === state.editVersion;
         state.isApplying = false;
-        setValues(message.params || state.values);
+        if (isCurrentApply) {
+          setValues(message.params || state.values);
+        }
         debugEl.textContent = message.detail || t("readyAgain");
-        setStatus("readyAgain");
+        setStatus(isCurrentApply ? "readyAgain" : "autoApplying");
         setControlsEnabled(true);
-        applyButton.textContent = t("apply");
-        renderPreview();
+        if (isCurrentApply) renderPreview();
         if (state.queuedAutoApply) {
           state.queuedAutoApply = false;
           scheduleAutoApply();
@@ -866,11 +1425,11 @@
         debugEl.textContent = message.detail || t("restored");
         setStatus("restored");
         setControlsEnabled(true);
-        applyButton.textContent = t("apply");
       }
     };
 
     setControlsEnabled(false);
+    drawColorWheels();
     updateOutputs();
     setLanguage("zh");
     debugEl.textContent = t("uiRefreshSent");

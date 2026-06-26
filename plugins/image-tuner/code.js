@@ -4,7 +4,7 @@ if (!host) {
   throw new Error("Plugin host API was not found. Expected mg, mastergo, or figma.");
 }
 
-host.showUI(__html__, { width: 400, height: 720 });
+host.showUI(__html__, { width: 420, height: 860 });
 
 function postToUi(message) {
   if (host.ui && typeof host.ui.postMessage === "function") {
@@ -50,6 +50,17 @@ var PARAM_KEYS = [
   "vibrance",
   "saturation",
   "hue",
+  "cgShadowsHue",
+  "cgShadowsSaturation",
+  "cgShadowsLuminance",
+  "cgMidtonesHue",
+  "cgMidtonesSaturation",
+  "cgMidtonesLuminance",
+  "cgHighlightsHue",
+  "cgHighlightsSaturation",
+  "cgHighlightsLuminance",
+  "cgBlending",
+  "cgBalance",
   "grain",
   "vignette"
 ];
@@ -59,6 +70,7 @@ function getDefaultParams() {
   PARAM_KEYS.forEach(function (key) {
     params[key] = 0;
   });
+  params.cgBlending = 50;
   return params;
 }
 
@@ -309,7 +321,7 @@ async function exportNodeBytes(node) {
   throw new Error("node.exportAsync unavailable");
 }
 
-async function applyImageBytes(bytes, params) {
+async function applyImageBytes(bytes, params, version) {
   try {
     var selection = await getSelection();
     if (selection.length !== 1) {
@@ -363,6 +375,7 @@ async function applyImageBytes(bytes, params) {
     postToUi({
       type: "apply-complete",
       params: readSavedParams(node),
+      version: version,
       detail: "Applied tuned PNG. paramsSaved=" + paramsSaved
     });
   } catch (error) {
@@ -531,7 +544,7 @@ if (host.ui) {
       sendCurrentSelection("ui-refresh");
     }
     if (payload && payload.type === "apply-image") {
-      applyImageBytes(payload.bytes, payload.params);
+      applyImageBytes(payload.bytes, payload.params, payload.version);
     }
     if (payload && payload.type === "reset-image") {
       resetSelectedImage();
