@@ -4,7 +4,7 @@ if (!host) {
   throw new Error("Plugin host API was not found. Expected mg, mastergo, or figma.");
 }
 
-host.showUI(__html__, { width: 380, height: 620 });
+host.showUI(__html__, { width: 400, height: 720 });
 
 function postToUi(message) {
   if (host.ui && typeof host.ui.postMessage === "function") {
@@ -38,9 +38,28 @@ function describeSelectionApis() {
 var PARAMS_KEY = "image-tuner-params-v1";
 var ORIGINAL_IMAGE_REF_KEY = "image-tuner-original-image-ref-v1";
 var APPLIED_IMAGE_REF_KEY = "image-tuner-applied-image-ref-v1";
+var PARAM_KEYS = [
+  "exposure",
+  "contrast",
+  "highlights",
+  "shadows",
+  "whites",
+  "blacks",
+  "temperature",
+  "tint",
+  "vibrance",
+  "saturation",
+  "hue",
+  "grain",
+  "vignette"
+];
 
 function getDefaultParams() {
-  return { brightness: 0, contrast: 0, saturation: 0, hue: 0 };
+  var params = {};
+  PARAM_KEYS.forEach(function (key) {
+    params[key] = 0;
+  });
+  return params;
 }
 
 function readSavedParams(node) {
@@ -50,12 +69,14 @@ function readSavedParams(node) {
     var raw = node.getPluginData(PARAMS_KEY);
     if (!raw) return getDefaultParams();
     var parsed = JSON.parse(raw);
-    return {
-      brightness: Number(parsed.brightness) || 0,
-      contrast: Number(parsed.contrast) || 0,
-      saturation: Number(parsed.saturation) || 0,
-      hue: Number(parsed.hue) || 0
-    };
+    var params = getDefaultParams();
+    PARAM_KEYS.forEach(function (key) {
+      params[key] = Number(parsed[key]) || 0;
+    });
+    if (parsed.brightness && !params.exposure) {
+      params.exposure = Number(parsed.brightness) || 0;
+    }
+    return params;
   } catch (error) {
     return getDefaultParams();
   }
@@ -64,12 +85,10 @@ function readSavedParams(node) {
 function saveParams(node, params) {
   if (!node || typeof node.setPluginData !== "function") return false;
 
-  var nextParams = {
-    brightness: Number(params && params.brightness) || 0,
-    contrast: Number(params && params.contrast) || 0,
-    saturation: Number(params && params.saturation) || 0,
-    hue: Number(params && params.hue) || 0
-  };
+  var nextParams = getDefaultParams();
+  PARAM_KEYS.forEach(function (key) {
+    nextParams[key] = Number(params && params[key]) || 0;
+  });
 
   node.setPluginData(PARAMS_KEY, JSON.stringify(nextParams));
   return true;
@@ -298,7 +317,8 @@ async function applyImageBytes(bytes, params) {
         type: "selection-status",
         ok: false,
         title: "Apply failed",
-        detail: "Select one layer before applying. selection=" + selection.length
+        detail: "Select one layer before applying. selection=" + selection.length,
+        source: "apply"
       });
       return;
     }
@@ -309,7 +329,8 @@ async function applyImageBytes(bytes, params) {
         type: "selection-status",
         ok: false,
         title: "Apply failed",
-        detail: "Selected layer cannot accept fills. " + describeNode(node)
+        detail: "Selected layer cannot accept fills. " + describeNode(node),
+        source: "apply"
       });
       return;
     }
@@ -349,7 +370,8 @@ async function applyImageBytes(bytes, params) {
       type: "selection-status",
       ok: false,
       title: "Apply failed",
-      detail: error && error.message ? error.message : String(error)
+      detail: error && error.message ? error.message : String(error),
+      source: "apply"
     });
   }
 }
