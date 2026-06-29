@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图层批量命名</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #222;
+      background: #f7f7f5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f7f7f5;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 100vh;
+      padding: 14px 14px 76px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .status {
+      border: 1px solid #d8d7d0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .status-title {
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .status-detail,
+    .diagnostics {
+      color: #66645d;
+    }
+
+    .diagnostics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      background: #eeeeea;
+      padding: 3px 7px;
+      white-space: nowrap;
+    }
+
+    .panel {
+      display: grid;
+      gap: 10px;
+      border: 1px solid #d8d7d0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+      font-weight: 650;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid #c9c7bf;
+      border-radius: 6px;
+      background: #fff;
+      color: #222;
+      padding: 6px 8px;
+      outline: none;
+    }
+
+    .language-select {
+      width: 88px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #3366ff;
+      box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.14);
+    }
+
+    select option {
+      height: 34px;
+      min-height: 34px;
+      padding: 9px 10px;
+      line-height: 2.1;
+    }
+
+    .custom-select {
+      position: relative;
+    }
+
+    .custom-select-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid #c9c7bf;
+      border-radius: 6px;
+      background: #fff;
+      color: #222;
+      padding: 6px 8px;
+      font-weight: 400;
+      text-align: left;
+    }
+
+    .custom-select-button::after {
+      content: "";
+      display: block;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid #555;
+      border-bottom: 2px solid #555;
+      transform: rotate(45deg);
+      transition: transform 0.16s ease;
+      color: #333;
+      margin: -4px 2px 0 10px;
+      flex: 0 0 auto;
+    }
+
+    .custom-select.open .custom-select-button::after {
+      transform: rotate(225deg);
+      margin-top: 4px;
+    }
+
+    .custom-select.open .custom-select-button {
+      border-color: #3366ff;
+      box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.14);
+    }
+
+    .custom-options {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      display: none;
+      border: 1px solid #b8b8b2;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+      padding: 6px;
+      z-index: 50;
+    }
+
+    .custom-select.open .custom-options {
+      display: grid;
+      gap: 4px;
+    }
+
+    .custom-option {
+      min-height: 36px;
+      border: 0;
+      border-radius: 6px;
+      background: #fff;
+      padding: 8px 10px;
+      color: #222;
+      font-weight: 400;
+      text-align: left;
+    }
+
+    .custom-option:hover {
+      background: #eef2ff;
+    }
+
+    .custom-option.selected {
+      background: #1f5eff;
+      color: #fff;
+    }
+
+    .hint {
+      color: #77746d;
+      font-weight: 400;
+    }
+
+    .field-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .link-button {
+      min-height: 24px;
+      border: 0;
+      background: transparent;
+      color: #1f5eff;
+      padding: 0 2px;
+      font-weight: 700;
+    }
+
+    .link-button:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+
+    .token-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #2447b8;
+      padding: 2px 7px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .token-help {
+      display: grid;
+      gap: 8px;
+      border: 1px solid #e0e4f7;
+      border-radius: 8px;
+      background: #f7f9ff;
+      padding: 10px;
+    }
+
+    .template-builder {
+      display: grid;
+      gap: 8px;
+    }
+
+    .template-board {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      border: 1px dashed #bfc8ee;
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 8px;
+    }
+
+    .template-board.empty::before {
+      content: attr(data-placeholder);
+      color: #9a9a92;
+    }
+
+    .template-block {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      min-height: 30px;
+      border: 1px solid #c8d2ff;
+      border-radius: 7px;
+      background: #eef2ff;
+      color: #2447b8;
+      padding: 6px 24px 6px 9px;
+      font-weight: 700;
+      user-select: none;
+      cursor: grab;
+    }
+
+    .template-block.text {
+      border-color: #dedbd0;
+      background: #f4f3ef;
+      color: #3d3b36;
+      font-weight: 650;
+    }
+
+    .template-block.text.editing {
+      border-color: #1f5eff;
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(31, 94, 255, 0.14);
+      cursor: text;
+    }
+
+    .template-block.dragging {
+      opacity: 0.42;
+      cursor: grabbing;
+    }
+
+    .template-block.drop-before::before,
+    .template-block.drop-after::after {
+      content: "";
+      position: absolute;
+      top: -5px;
+      bottom: -5px;
+      width: 3px;
+      border-radius: 999px;
+      background: #1f5eff;
+      box-shadow: 0 0 0 3px rgba(31, 94, 255, 0.14);
+    }
+
+    .template-block.drop-before::before {
+      left: -6px;
+    }
+
+    .template-block.drop-after::after {
+      right: -6px;
+    }
+
+    .template-block code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .block-text {
+      min-width: 8px;
+      outline: none;
+      white-space: pre;
+    }
+
+    .remove-block {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      display: grid;
+      place-items: center;
+      width: 18px;
+      min-height: 18px;
+      height: 18px;
+      border: 1px solid #c9c7bf;
+      border-radius: 50%;
+      background: #fff;
+      color: #555;
+      padding: 0;
+      line-height: 1;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .text-adder {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .token-help-title {
+      color: #444b63;
+      font-weight: 700;
+    }
+
+    .token-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .token-button {
+      min-height: 28px;
+      border-color: #c8d2ff;
+      background: #fff;
+      color: #2447b8;
+      padding: 4px 8px;
+      font-weight: 700;
+    }
+
+    .token-button code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .token-map {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 2px;
+      row-gap: 6px;
+      color: #555b70;
+    }
+
+    .token-map-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .token-map-item span:last-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .example {
+      border-radius: 6px;
+      background: #fff;
+      color: #444b63;
+      padding: 7px 8px;
+    }
+
+    .actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      border-top: 1px solid #d8d7d0;
+      background: rgba(247, 247, 245, 0.96);
+      padding: 10px 14px 12px;
+      backdrop-filter: blur(8px);
+      z-index: 20;
+    }
+
+    button {
+      min-height: 34px;
+      border: 1px solid #c9c7bf;
+      border-radius: 6px;
+      background: #fff;
+      color: #222;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button:hover {
+      background: #f0f0ec;
+    }
+
+    button.primary {
+      border-color: #1f5eff;
+      background: #1f5eff;
+      color: #fff;
+    }
+
+    button.primary:hover {
+      background: #174dda;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    .preview {
+      display: grid;
+      gap: 8px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #66645d;
+      font-weight: 700;
+    }
+
+    .list {
+      display: grid;
+      max-height: 214px;
+      overflow: auto;
+      border: 1px solid #d8d7d0;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      min-height: 38px;
+      padding: 8px;
+      border-bottom: 1px solid #eeeeea;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .old,
+    .next {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .old {
+      color: #66645d;
+    }
+
+    .next {
+      color: #111;
+      font-weight: 700;
+    }
+
+    .arrow {
+      color: #9b988f;
+      text-align: center;
+    }
+
+    .warning {
+      display: none;
+      border-radius: 6px;
+      background: #fff4d6;
+      color: #704600;
+      padding: 8px;
+    }
+
+    .warning.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <h1 data-i18n="appTitle">图层批量命名</h1>
+      <div class="top-actions">
+        <select id="languageSelect" class="language-select" aria-label="Language">
+          <option value="zh">中文</option>
+          <option value="en">English</option>
+        </select>
+        <button id="refreshButton" type="button" data-i18n="refresh">刷新</button>
+      </div>
+    </div>
+
+    <section class="status" aria-live="polite">
+      <div class="status-title" id="statusTitle">正在读取选择</div>
+      <div class="status-detail" id="statusDetail">等待 MasterGo...</div>
+      <div class="diagnostics" id="diagnostics"></div>
+    </section>
+
+    <section class="panel">
+      <label>
+        <span class="section-title">
+          <span data-i18n="template">命名模板</span>
+          <button id="clearTemplateButton" class="link-button" type="button" data-i18n="clearTemplate">清空模板</button>
+        </span>
+        <div class="template-builder">
+          <div id="templateBoard" class="template-board empty" data-placeholder="请从下方选择参数模板"></div>
+          <div class="text-adder">
+            <input id="addTextInput" type="text" value="" autocomplete="off">
+            <button id="addTextButton" type="button" data-i18n="addText">添加文本</button>
+          </div>
+        </div>
+        <span class="hint" data-i18n="templateHint">模板里的参数会从下方表单自动取值。</span>
+      </label>
+
+      <div class="token-help">
+        <div class="token-help-title" data-i18n="tokenHelpTitle">点击参数可插入到模板</div>
+        <div class="token-buttons">
+          <button class="token-button" type="button" data-token="{n}"><code>{n}</code> <span data-i18n="tokenNumberShort">编号</span></button>
+          <button class="token-button" type="button" data-token="{old}"><code>{old}</code> <span data-i18n="tokenOldShort">原名</span></button>
+          <button class="token-button" type="button" data-token="{i}"><code>{i}</code> <span data-i18n="tokenIndexShort">顺序</span></button>
+          <button class="token-button" type="button" data-token="{type}"><code>{type}</code> <span data-i18n="tokenTypeShort">类型</span></button>
+          <button class="token-button" type="button" data-token="{date}"><code>{date}</code> <span data-i18n="tokenDateShort">日期</span></button>
+        </div>
+        <div class="token-map">
+          <div class="token-map-item"><span class="token-badge">{n}</span> <span data-i18n="tokenNumberMap">来自“起始编号”和“编号位数”</span></div>
+          <div class="token-map-item"><span class="token-badge">{old}</span> <span data-i18n="tokenOldMap">来自当前图层原名</span></div>
+          <div class="token-map-item"><span class="token-badge">{i}</span> <span data-i18n="tokenIndexMap">来自当前选择顺序</span></div>
+          <div class="token-map-item"><span class="token-badge">{type}</span> <span data-i18n="tokenTypeMap">来自图层类型</span></div>
+          <div class="token-map-item"><span class="token-badge">{date}</span> <span data-i18n="tokenDateMap">来自下方日期设置</span></div>
+        </div>
+        <div class="example" id="templateExample"></div>
+      </div>
+
+      <div class="grid-two">
+        <label>
+          <span class="field-title"><span data-i18n="dateValue">日期</span><span class="token-badge">{date}</span></span>
+          <input id="dateInput" type="date">
+        </label>
+        <label>
+          <span data-i18n="dateFormat">日期格式</span>
+          <div id="dateFormatSelect" class="custom-select" data-value="zh">
+            <button id="dateFormatButton" class="custom-select-button" type="button">2025年06月10日</button>
+            <div class="custom-options">
+              <button class="custom-option selected" type="button" data-date-format="zh">2025年06月10日</button>
+              <button class="custom-option" type="button" data-date-format="dash">2025-06-10</button>
+              <button class="custom-option" type="button" data-date-format="slash">2025/06/10</button>
+              <button class="custom-option" type="button" data-date-format="compact">20250610</button>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="grid-two">
+        <label>
+          <span class="field-title"><span data-i18n="startNumber">起始编号</span><span class="token-badge">{n}</span></span>
+          <input id="startInput" type="number" value="1" min="0" step="1">
+        </label>
+        <label>
+          <span class="field-title"><span data-i18n="numberWidth">编号位数</span><span class="token-badge">{n}</span></span>
+          <input id="paddingInput" type="number" value="2" min="1" max="6" step="1">
+        </label>
+      </div>
+
+      <div class="warning" id="warning"></div>
+
+      <div class="actions">
+        <button id="resetButton" type="button" data-i18n="resetForm">重置表单</button>
+        <button id="applyButton" class="primary" type="button" disabled data-i18n="applyNames">应用命名</button>
+      </div>
+    </section>
+
+    <section class="preview">
+      <div class="preview-header">
+        <span data-i18n="preview">预览</span>
+        <span id="previewCount">0 个图层</span>
+      </div>
+      <div class="list" id="previewList"></div>
+    </section>
+  </main>
+
+  <script>
+    var messages = {
+      zh: {
+        appTitle: "图层批量命名",
+        refresh: "刷新",
+        template: "命名模板",
+        clearTemplate: "清空模板",
+        templateHint: "模板里的参数会从下方表单自动取值。",
+        templateBoardPlaceholder: "请从下方选择参数模板",
+        addText: "添加文本",
+        textPlaceholder: "输入固定文本，例如 - 或 _",
+        textBlockLabel: "文本",
+        removeBlock: "删除",
+        tokenHelpTitle: "点击参数可插入到模板",
+        tokenNumberShort: "编号",
+        tokenOldShort: "原名",
+        tokenIndexShort: "顺序",
+        tokenTypeShort: "类型",
+        tokenDateShort: "日期",
+        tokenNumberMap: "来自“起始编号”和“编号位数”",
+        tokenOldMap: "来自当前图层原名",
+        tokenIndexMap: "来自当前选择顺序",
+        tokenTypeMap: "来自图层类型",
+        tokenDateMap: "来自下方日期设置",
+        dateValue: "日期",
+        dateFormat: "日期格式",
+        examplePrefix: "示例",
+        startNumber: "起始编号",
+        numberWidth: "编号位数",
+        resetForm: "重置表单",
+        applyNames: "应用命名",
+        preview: "预览",
+        loadingTitle: "正在读取选择",
+        loadingDetail: "等待 MasterGo...",
+        readyTitle: "准备就绪",
+        noSelectionTitle: "未选择图层",
+        noSelectionDetail: "请选择一个或多个图层，然后点击刷新。",
+        selectionLoadedTitle: "已读取选择",
+        selectionLoadedDetail: "已选择 {selected} 个图层，其中 {renameable} 个可命名。",
+        applyCompleteTitle: "命名完成",
+        applyErrorTitle: "命名完成，但有问题",
+        applyDetail: "已重命名 {renamed} 个图层。{failed}",
+        failedSuffix: "{failed} 个失败。",
+        host: "宿主",
+        selected: "已选",
+        renameable: "可命名",
+        postMessage: "消息",
+        yes: "是",
+        no: "否",
+        layerSingular: "个图层",
+        layerPlural: "个图层",
+        noSelectedLayers: "未选择图层",
+        refreshAfterSelect: "选择图层后点击刷新",
+        cannotRename: "不可命名",
+        untitled: "未命名",
+        duplicateWarning: "预览中有 {count} 个重复名称。MasterGo 通常允许重复图层名。",
+        emptyTemplateWarning: "请先选择至少一个参数或添加文本。",
+        fixedExample: "示例: 文本“图层 ” + {n} -> 图层 01。{date} -> 2025年06月10日。",
+        defaultTemplate: ""
+      },
+      en: {
+        appTitle: "Layer Renamer",
+        refresh: "Refresh",
+        template: "Template",
+        clearTemplate: "Clear Template",
+        templateHint: "Template tokens use values from the fields below.",
+        templateBoardPlaceholder: "Choose template parts below",
+        addText: "Add Text",
+        textPlaceholder: "Static text, such as - or _",
+        textBlockLabel: "Text",
+        removeBlock: "Remove",
+        tokenHelpTitle: "Click a token to insert it into the template",
+        tokenNumberShort: "Number",
+        tokenOldShort: "Old name",
+        tokenIndexShort: "Index",
+        tokenTypeShort: "Type",
+        tokenDateShort: "Date",
+        tokenNumberMap: "uses Start number and Number width",
+        tokenOldMap: "uses the current layer name",
+        tokenIndexMap: "uses the current selection order",
+        tokenTypeMap: "uses the layer type",
+        tokenDateMap: "uses the date settings below",
+        dateValue: "Date",
+        dateFormat: "Date format",
+        examplePrefix: "Example",
+        startNumber: "Start number",
+        numberWidth: "Number width",
+        resetForm: "Reset Form",
+        applyNames: "Apply Names",
+        preview: "Preview",
+        loadingTitle: "Loading selection",
+        loadingDetail: "Waiting for MasterGo...",
+        readyTitle: "Ready",
+        noSelectionTitle: "No layers selected",
+        noSelectionDetail: "Select one or more layers, then refresh.",
+        selectionLoadedTitle: "Selection loaded",
+        selectionLoadedDetail: "Selected {selected} layer(s), {renameable} can be renamed.",
+        applyCompleteTitle: "Rename complete",
+        applyErrorTitle: "Rename finished with issues",
+        applyDetail: "Renamed {renamed} layer(s). {failed}",
+        failedSuffix: "{failed} failed.",
+        host: "Host",
+        selected: "Selected",
+        renameable: "Renameable",
+        postMessage: "PostMessage",
+        yes: "yes",
+        no: "no",
+        layerSingular: "layer",
+        layerPlural: "layers",
+        noSelectedLayers: "No selected layers",
+        refreshAfterSelect: "Refresh after selecting layers",
+        cannotRename: "Cannot rename",
+        untitled: "Untitled",
+        duplicateWarning: "Preview contains {count} duplicate generated name(s). MasterGo usually allows duplicates.",
+        emptyTemplateWarning: "Choose at least one token or add text first.",
+        fixedExample: "Example: Text \"Layer \" + {n} -> Layer 01. {date} -> 2025-06-10.",
+        defaultTemplate: ""
+      }
+    };
+
+    var state = {
+      language: "zh",
+      layers: [],
+      hostName: "unknown",
+      selectionCount: 0,
+      renameableCount: 0,
+      statusMode: "loading",
+      renamed: 0,
+      failedCount: 0,
+      canPostMessage: true,
+      templateBlocks: [],
+      draggedBlockId: null,
+      dropTargetId: null,
+      dropSide: "after"
+    };
+
+    var elements = {
+      languageSelect: document.getElementById("languageSelect"),
+      statusTitle: document.getElementById("statusTitle"),
+      statusDetail: document.getElementById("statusDetail"),
+      diagnostics: document.getElementById("diagnostics"),
+      templateBoard: document.getElementById("templateBoard"),
+      clearTemplateButton: document.getElementById("clearTemplateButton"),
+      addTextInput: document.getElementById("addTextInput"),
+      addTextButton: document.getElementById("addTextButton"),
+      dateInput: document.getElementById("dateInput"),
+      dateFormatSelect: document.getElementById("dateFormatSelect"),
+      dateFormatButton: document.getElementById("dateFormatButton"),
+      startInput: document.getElementById("startInput"),
+      paddingInput: document.getElementById("paddingInput"),
+      templateExample: document.getElementById("templateExample"),
+      warning: document.getElementById("warning"),
+      refreshButton: document.getElementById("refreshButton"),
+      resetButton: document.getElementById("resetButton"),
+      applyButton: document.getElementById("applyButton"),
+      previewList: document.getElementById("previewList"),
+      previewCount: document.getElementById("previewCount")
+    };
+
+    function t(key, values) {
+      var dictionary = messages[state.language] || messages.zh;
+      var text = dictionary[key] || messages.en[key] || key;
+
+      Object.keys(values || {}).forEach(function (name) {
+        text = text.replace(new RegExp("\\{" + name + "\\}", "g"), values[name]);
+      });
+
+      return text;
+    }
+
+    function post(message) {
+      parent.postMessage(message, "*");
+      parent.postMessage({ pluginMessage: message }, "*");
+    }
+
+    function readOptions() {
+      var template = getTemplateString();
+
+      return {
+        template: template,
+        start: clampInteger(elements.startInput.value, 0, 999999, 1),
+        padding: clampInteger(elements.paddingInput.value, 1, 6, 2),
+        dateValue: elements.dateInput.value || getTodayValue(),
+        dateFormat: elements.dateFormatSelect.getAttribute("data-value") || "zh"
+      };
+    }
+
+    function getTemplateString() {
+      return state.templateBlocks.map(function (block) {
+        return block.value;
+      }).join("");
+    }
+
+    function makeBlockId() {
+      return "block-" + Date.now() + "-" + Math.floor(Math.random() * 100000);
+    }
+
+    function clampInteger(value, min, max, fallback) {
+      var parsed = parseInt(value, 10);
+
+      if (Number.isNaN(parsed)) {
+        parsed = fallback;
+      }
+
+      return Math.max(min, Math.min(max, parsed));
+    }
+
+    function pad2(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function getTodayValue() {
+      var today = new Date();
+      return today.getFullYear() + "-" + pad2(today.getMonth() + 1) + "-" + pad2(today.getDate());
+    }
+
+    function formatDate(value, format) {
+      var parts = String(value || getTodayValue()).split("-");
+      var year = parts[0] || "2025";
+      var month = parts[1] || "01";
+      var day = parts[2] || "01";
+
+      if (format === "dash") {
+        return year + "-" + month + "-" + day;
+      }
+
+      if (format === "slash") {
+        return year + "/" + month + "/" + day;
+      }
+
+      if (format === "compact") {
+        return year + month + day;
+      }
+
+      return year + "年" + month + "月" + day + "日";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function sanitizePreviewName(value) {
+      var result = String(value || "").replace(/\s+/g, " ").trim();
+
+      if (!result) {
+        result = t("untitled");
+      }
+
+      if (result.length > 120) {
+        result = result.slice(0, 120);
+      }
+
+      return result;
+    }
+
+    function replaceAllTokens(template, tokens) {
+      return String(template || "").replace(/\{n\}|\{i\}|\{old\}|\{type\}|\{date\}/g, function (token) {
+        return tokens[token] || "";
+      });
+    }
+
+    function buildName(layer, index, options) {
+      var plainIndex = String(index + 1);
+      var number = String(options.start + index).padStart(options.padding, "0");
+      var tokens = {
+        "{n}": number,
+        "{i}": plainIndex,
+        "{old}": layer.name || "",
+        "{type}": layer.type || "",
+        "{date}": formatDate(options.dateValue, options.dateFormat)
+      };
+      var name = replaceAllTokens(options.template, tokens);
+
+      return sanitizePreviewName(name);
+    }
+
+    function renderTemplateBlocks() {
+      elements.templateBoard.className = state.templateBlocks.length ? "template-board" : "template-board empty";
+      elements.templateBoard.setAttribute("data-placeholder", t("templateBoardPlaceholder"));
+
+      elements.templateBoard.innerHTML = state.templateBlocks.map(function (block) {
+        var isToken = block.kind === "token";
+        var label = isToken ? block.value : block.value || " ";
+        var title = isToken ? block.value : t("textBlockLabel") + ": " + block.value;
+        return [
+          '<span class="template-block ' + (isToken ? "token" : "text") + '" draggable="true" data-block-id="' + escapeHtml(block.id) + '" title="' + escapeHtml(title) + '">',
+          isToken ? '<code>' + escapeHtml(label) + "</code>" : '<span class="block-text" data-edit-block="' + escapeHtml(block.id) + '">' + escapeHtml(label) + "</span>",
+          '<button class="remove-block" type="button" data-remove-block="' + escapeHtml(block.id) + '" aria-label="' + escapeHtml(t("removeBlock")) + '">×</button>',
+          "</span>"
+        ].join("");
+      }).join("");
+
+      Array.prototype.slice.call(elements.templateBoard.querySelectorAll("[data-remove-block]")).forEach(function (button) {
+        button.addEventListener("pointerdown", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+        button.addEventListener("click", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          removeTemplateBlock(button.getAttribute("data-remove-block"));
+        });
+      });
+
+      Array.prototype.slice.call(elements.templateBoard.querySelectorAll("[data-block-id]")).forEach(function (blockElement) {
+        blockElement.addEventListener("dragstart", handleBlockDragStart);
+        blockElement.addEventListener("dragover", handleBlockDragOver);
+        blockElement.addEventListener("dragleave", handleBlockDragLeave);
+        blockElement.addEventListener("drop", handleBlockDrop);
+        blockElement.addEventListener("dragend", handleBlockDragEnd);
+      });
+
+      Array.prototype.slice.call(elements.templateBoard.querySelectorAll("[data-edit-block]")).forEach(function (textElement) {
+        textElement.addEventListener("click", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          startEditingTextBlock(textElement);
+        });
+      });
+    }
+
+    function addTemplateBlock(kind, value) {
+      if (kind === "text" && !value) {
+        return;
+      }
+
+      state.templateBlocks.push({
+        id: makeBlockId(),
+        kind: kind,
+        value: value
+      });
+      renderPreview();
+    }
+
+    function removeTemplateBlock(blockId) {
+      if (!blockId) {
+        return;
+      }
+
+      var index = state.templateBlocks.findIndex(function (block) {
+        return block.id === blockId;
+      });
+
+      if (index < 0) {
+        return;
+      }
+
+      state.templateBlocks.splice(index, 1);
+      renderPreview();
+    }
+
+    function moveTemplateBlock(sourceId, targetId, side) {
+      if (!sourceId || !targetId || sourceId === targetId) {
+        return;
+      }
+
+      var sourceIndex = state.templateBlocks.findIndex(function (block) {
+        return block.id === sourceId;
+      });
+      var targetIndex = state.templateBlocks.findIndex(function (block) {
+        return block.id === targetId;
+      });
+
+      if (sourceIndex < 0 || targetIndex < 0) {
+        return;
+      }
+
+      var moved = state.templateBlocks.splice(sourceIndex, 1)[0];
+      if (sourceIndex < targetIndex) {
+        targetIndex -= 1;
+      }
+      if (side === "after") {
+        targetIndex += 1;
+      }
+      state.templateBlocks.splice(targetIndex, 0, moved);
+      renderPreview();
+    }
+
+    function getDropSide(event, element) {
+      var rect = element.getBoundingClientRect();
+      var midpoint = rect.left + rect.width / 2;
+      return event.clientX < midpoint ? "before" : "after";
+    }
+
+    function clearDropPreview() {
+      Array.prototype.slice.call(elements.templateBoard.querySelectorAll(".drop-before, .drop-after")).forEach(function (element) {
+        element.classList.remove("drop-before");
+        element.classList.remove("drop-after");
+      });
+    }
+
+    function showDropPreview(element, side) {
+      clearDropPreview();
+      element.classList.add(side === "before" ? "drop-before" : "drop-after");
+      state.dropTargetId = element.getAttribute("data-block-id");
+      state.dropSide = side;
+    }
+
+    function handleBlockDragStart(event) {
+      if (event.currentTarget.classList.contains("editing")) {
+        event.preventDefault();
+        return;
+      }
+
+      state.draggedBlockId = event.currentTarget.getAttribute("data-block-id");
+      event.currentTarget.classList.add("dragging");
+
+      if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", state.draggedBlockId);
+      }
+    }
+
+    function handleBlockDragOver(event) {
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
+      }
+      if (event.currentTarget.getAttribute("data-block-id") !== state.draggedBlockId) {
+        showDropPreview(event.currentTarget, getDropSide(event, event.currentTarget));
+      } else {
+        clearDropPreview();
+      }
+    }
+
+    function handleBlockDragLeave(event) {
+      var nextTarget = event.relatedTarget;
+      if (!event.currentTarget.contains(nextTarget)) {
+        event.currentTarget.classList.remove("drop-before");
+        event.currentTarget.classList.remove("drop-after");
+      }
+    }
+
+    function handleBlockDrop(event) {
+      event.preventDefault();
+      var targetId = event.currentTarget.getAttribute("data-block-id");
+      var side = targetId === state.dropTargetId ? state.dropSide : getDropSide(event, event.currentTarget);
+      clearDropPreview();
+      moveTemplateBlock(state.draggedBlockId, targetId, side);
+    }
+
+    function handleBlockDragEnd(event) {
+      event.currentTarget.classList.remove("dragging");
+      clearDropPreview();
+      state.draggedBlockId = null;
+      state.dropTargetId = null;
+      state.dropSide = "after";
+    }
+
+    function startEditingTextBlock(textElement) {
+      var blockId = textElement.getAttribute("data-edit-block");
+      var wrapper = textElement.closest("[data-block-id]");
+
+      if (!blockId || !wrapper) {
+        return;
+      }
+
+      wrapper.classList.add("editing");
+      wrapper.setAttribute("draggable", "false");
+      textElement.setAttribute("contenteditable", "true");
+      textElement.focus();
+      selectElementText(textElement);
+
+      function finishEditing(shouldSave) {
+        var nextValue = textElement.textContent || "";
+        textElement.removeAttribute("contenteditable");
+        wrapper.classList.remove("editing");
+        wrapper.setAttribute("draggable", "true");
+        textElement.removeEventListener("blur", onBlur);
+        textElement.removeEventListener("keydown", onKeyDown);
+
+        if (shouldSave) {
+          updateTextBlock(blockId, nextValue);
+        } else {
+          renderPreview();
+        }
+      }
+
+      function onBlur() {
+        finishEditing(true);
+      }
+
+      function onKeyDown(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          finishEditing(true);
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          finishEditing(false);
+        }
+      }
+
+      textElement.addEventListener("blur", onBlur);
+      textElement.addEventListener("keydown", onKeyDown);
+    }
+
+    function selectElementText(element) {
+      var selection = window.getSelection && window.getSelection();
+      var range = document.createRange && document.createRange();
+
+      if (!selection || !range) {
+        return;
+      }
+
+      range.selectNodeContents(element);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    function updateTextBlock(blockId, value) {
+      var block = state.templateBlocks.find(function (item) {
+        return item.id === blockId;
+      });
+
+      if (!block) {
+        return;
+      }
+
+      block.value = value;
+      renderPreview();
+    }
+
+    function buildExampleText() {
+      return t("fixedExample");
+    }
+
+    function getPreviewItems() {
+      var options = readOptions();
+      return state.layers.map(function (layer, index) {
+        return {
+          id: layer.id,
+          index: layer.index,
+          oldName: layer.name || "",
+          type: layer.type || "",
+          canRename: layer.canRename,
+          name: buildName(layer, index, options)
+        };
+      });
+    }
+
+    function renderStatus(message) {
+      elements.statusTitle.textContent = getStatusTitle();
+      elements.statusDetail.textContent = getStatusDetail();
+
+      elements.diagnostics.innerHTML = [
+        t("host") + ": " + (message.hostName || state.hostName || "unknown"),
+        t("selected") + ": " + state.selectionCount,
+        t("renameable") + ": " + state.renameableCount,
+        t("postMessage") + ": " + (state.canPostMessage === false ? t("no") : t("yes"))
+      ].map(function (text) {
+        return '<span class="pill">' + escapeHtml(text) + "</span>";
+      }).join("");
+    }
+
+    function getStatusTitle() {
+      if (state.statusMode === "applied") {
+        return state.failedCount ? t("applyErrorTitle") : t("applyCompleteTitle");
+      }
+
+      if (state.statusMode === "loading") {
+        return t("loadingTitle");
+      }
+
+      if (!state.selectionCount) {
+        return t("noSelectionTitle");
+      }
+
+      return t("selectionLoadedTitle");
+    }
+
+    function getStatusDetail() {
+      if (state.statusMode === "applied") {
+        return t("applyDetail", {
+          renamed: state.renamed,
+          failed: state.failedCount ? t("failedSuffix", { failed: state.failedCount }) : ""
+        }).trim();
+      }
+
+      if (state.statusMode === "loading") {
+        return t("loadingDetail");
+      }
+
+      if (!state.selectionCount) {
+        return t("noSelectionDetail");
+      }
+
+      return t("selectionLoadedDetail", {
+        selected: state.selectionCount,
+        renameable: state.renameableCount
+      });
+    }
+
+    function renderPreview() {
+      var items = getPreviewItems();
+      var renameableItems = items.filter(function (item) {
+        return item.canRename;
+      });
+      var names = {};
+      var duplicateCount = 0;
+
+      renderTemplateBlocks();
+      elements.templateExample.textContent = buildExampleText();
+
+      renameableItems.forEach(function (item) {
+        if (names[item.name]) {
+          duplicateCount += 1;
+        }
+        names[item.name] = true;
+      });
+
+      elements.previewCount.textContent = renameableItems.length + " " + t(renameableItems.length === 1 ? "layerSingular" : "layerPlural");
+      elements.applyButton.disabled = renameableItems.length === 0 || !getTemplateString();
+
+      if (!items.length) {
+        elements.previewList.innerHTML = '<div class="row"><span class="old">' + escapeHtml(t("noSelectedLayers")) + '</span><span></span><span class="next">' + escapeHtml(t("refreshAfterSelect")) + '</span></div>';
+      } else {
+        elements.previewList.innerHTML = items.map(function (item) {
+          var nextName = item.canRename ? item.name : t("cannotRename");
+          return [
+            '<div class="row">',
+            '<span class="old" title="' + escapeHtml(item.oldName) + '">' + escapeHtml(item.oldName || t("untitled")) + "</span>",
+            '<span class="arrow">-&gt;</span>',
+            '<span class="next" title="' + escapeHtml(nextName) + '">' + escapeHtml(nextName) + "</span>",
+            "</div>"
+          ].join("");
+        }).join("");
+      }
+
+      if (!getTemplateString()) {
+        showWarning(t("emptyTemplateWarning"));
+      } else if (duplicateCount) {
+        showWarning(t("duplicateWarning", { count: duplicateCount }));
+      } else {
+        showWarning("");
+      }
+    }
+
+    function showWarning(text) {
+      elements.warning.textContent = text;
+      elements.warning.className = text ? "warning visible" : "warning";
+    }
+
+    function handleSelectionStatus(message) {
+      state.layers = Array.isArray(message.layers) ? message.layers : [];
+      state.hostName = message.hostName || "unknown";
+      state.selectionCount = message.selectionCount || 0;
+      state.renameableCount = message.renameableCount || 0;
+      state.canPostMessage = message.canPostMessage !== false;
+      state.statusMode = "selection";
+
+      renderStatus(message);
+      renderPreview();
+    }
+
+    function applyRenames() {
+      var items = getPreviewItems().filter(function (item) {
+        return item.canRename;
+      }).map(function (item) {
+        return {
+          id: item.id,
+          index: item.index,
+          name: item.name
+        };
+      });
+
+      elements.applyButton.disabled = true;
+      post({
+        type: "apply-renames",
+        requestId: Date.now(),
+        items: items
+      });
+    }
+
+    function resetForm() {
+      state.templateBlocks = [];
+      elements.addTextInput.value = "";
+      elements.dateInput.value = getTodayValue();
+      setDateFormat("zh");
+      elements.startInput.value = "1";
+      elements.paddingInput.value = "2";
+      renderPreview();
+    }
+
+    function clearTemplate() {
+      state.templateBlocks = [];
+      renderPreview();
+    }
+
+    function getDateFormatLabel(value) {
+      var option = elements.dateFormatSelect.querySelector('[data-date-format="' + value + '"]');
+      return option ? option.textContent : "2025年06月10日";
+    }
+
+    function setDateFormat(value) {
+      elements.dateFormatSelect.setAttribute("data-value", value);
+      elements.dateFormatButton.textContent = getDateFormatLabel(value);
+      Array.prototype.slice.call(elements.dateFormatSelect.querySelectorAll("[data-date-format]")).forEach(function (option) {
+        option.classList.toggle("selected", option.getAttribute("data-date-format") === value);
+      });
+      renderPreview();
+    }
+
+    function closeDateFormatMenu() {
+      elements.dateFormatSelect.classList.remove("open");
+    }
+
+    function toggleDateFormatMenu() {
+      elements.dateFormatSelect.classList.toggle("open");
+    }
+
+    function insertToken(token) {
+      addTemplateBlock("token", token);
+    }
+
+    function addTextBlockFromInput() {
+      addTemplateBlock("text", elements.addTextInput.value);
+      elements.addTextInput.value = "";
+      elements.addTextInput.focus();
+    }
+
+    function handleApplyResult(message) {
+      if (message.selection) {
+        state.layers = Array.isArray(message.selection.layers) ? message.selection.layers : [];
+        state.hostName = message.selection.hostName || "unknown";
+        state.selectionCount = message.selection.selectionCount || 0;
+        state.renameableCount = message.selection.renameableCount || 0;
+        state.canPostMessage = message.selection.canPostMessage !== false;
+        renderPreview();
+      } else {
+        post({ type: "refresh-selection" });
+      }
+
+      state.statusMode = "applied";
+      state.renamed = message.renamed || 0;
+      state.failedCount = Array.isArray(message.failed) ? message.failed.length : 0;
+      renderStatus({});
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = state.language === "zh" ? "zh-CN" : "en";
+      document.title = t("appTitle");
+      elements.languageSelect.value = state.language;
+      elements.addTextInput.placeholder = t("textPlaceholder");
+      if (!elements.dateInput.value) {
+        elements.dateInput.value = getTodayValue();
+      }
+
+      Array.prototype.slice.call(document.querySelectorAll("[data-i18n]")).forEach(function (node) {
+        node.textContent = t(node.getAttribute("data-i18n"));
+      });
+
+      renderStatus({});
+      renderPreview();
+    }
+
+    window.onmessage = function (event) {
+      var message = event.data && event.data.pluginMessage
+        ? event.data.pluginMessage
+        : event.data;
+
+      if (!message || !message.type) {
+        return;
+      }
+
+      if (message.type === "selection-status") {
+        handleSelectionStatus(message);
+      }
+
+      if (message.type === "apply-complete" || message.type === "apply-error") {
+        handleApplyResult(message);
+      }
+    };
+
+    [
+      elements.startInput,
+      elements.paddingInput,
+      elements.dateInput
+    ].forEach(function (element) {
+      element.addEventListener("input", renderPreview);
+      element.addEventListener("change", renderPreview);
+    });
+
+    elements.refreshButton.addEventListener("click", function () {
+      state.statusMode = "loading";
+      renderStatus({});
+      post({ type: "refresh-selection" });
+    });
+
+    elements.resetButton.addEventListener("click", resetForm);
+    elements.applyButton.addEventListener("click", applyRenames);
+    elements.clearTemplateButton.addEventListener("click", clearTemplate);
+    elements.dateFormatButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      toggleDateFormatMenu();
+    });
+    Array.prototype.slice.call(elements.dateFormatSelect.querySelectorAll("[data-date-format]")).forEach(function (option) {
+      option.addEventListener("click", function (event) {
+        event.stopPropagation();
+        setDateFormat(option.getAttribute("data-date-format"));
+        closeDateFormatMenu();
+      });
+    });
+    document.addEventListener("click", closeDateFormatMenu);
+    elements.addTextButton.addEventListener("click", addTextBlockFromInput);
+    elements.addTextInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addTextBlockFromInput();
+      }
+    });
+    Array.prototype.slice.call(document.querySelectorAll("[data-token]")).forEach(function (button) {
+      button.addEventListener("click", function () {
+        insertToken(button.getAttribute("data-token"));
+      });
+    });
+    elements.languageSelect.addEventListener("change", function () {
+      state.language = elements.languageSelect.value === "en" ? "en" : "zh";
+      applyLanguage();
+    });
+
+    applyLanguage();
+    post({ type: "refresh-selection" });
+  </script>
+</body>
+</html>
