@@ -1,56 +1,40 @@
-# Layer Renamer for MasterGo
+# 多功能命名 · MasterGo
 
-MasterGo plugin for batch renaming selected layers with a preview-first template workflow.
+版本：1.1.0；发布标签：layer-renamer-mastergo-v1.1.0。
 
-## Features
+## 安装
 
-- Read the current MasterGo selection.
-- Preview generated names before applying.
-- Rename multiple selected layers in one action.
-- Support `{date}`, `{n}`, `{i}`, `{old}`, and `{type}` template tokens.
-- Build the template with draggable blocks instead of editing token syntax by hand.
-- Delete template blocks with the corner remove button and drag blocks to reorder them.
-- Show how template tokens map to form fields and insert tokens by clicking them.
-- Configure start number and zero-padding width.
-- Choose a date and date format for the `{date}` token.
-- Open in Chinese by default and switch between Chinese and English in the panel.
-- Report host diagnostics, selection count, renameable count, and failed rename items.
+下载对应平台安装包并解压，在 MasterGo 插件开发/导入流程中，选择本目录的 manifest.json。
 
-## Files
+## 使用
 
-```text
-layer-renamer/layer-renamer-mastergo/
-  manifest.json
-  code.js
-  ui.html
-  icon.svg
-  README.md
-```
+- **图层名称**：组合文字、编号、日期、原名称及类型，或按分隔符编辑现有名称结构。
+- **文本内容**：直接选中文字图层，组合固定文字和常用参数，预览后应用；不会递归处理选中容器内的文字。
+- 参数可点击追加到队尾，也可拖拽插入指定位置；已有模板标签可拖拽排序。
+- 模板含有 `{date}` 才启用日期和格式设置，含有 `{n}` 才启用编号设置。
+- 切换修改对象时分别保留两套模板。
 
-## How to test
+## 模板参数
 
-1. Import `plugins/layer-renamer/layer-renamer-mastergo/manifest.json` in MasterGo plugin manager.
-2. Select multiple layers in a document.
-3. Run Layer Renamer.
-4. Confirm the panel shows the selected layer count and a rename preview.
-5. Add a text block such as `Button`, then add `{n}`.
-6. Click Apply Names and confirm the selected layers are renamed.
-7. Test empty selection and unsupported selection states to confirm a clear status message is shown.
+| 参数 | 含义 |
+| --- | --- |
+| `{n}` | 按起始值递增的补零编号 |
+| `{i}` | 从 1 开始的顺序 |
+| `{old}` | 原图层名称或原文本内容 |
+| `{type}` | 图层类型 |
+| `{date}` | 指定日期和输出格式 |
+| `{person}` | 示例姓名 |
+| `{phone}` | 脱敏手机号 |
+| `{email}` | example.com 示例邮箱 |
+| `{company}` | 示例公司名称 |
+| `{address}` | 示例地址 |
 
-## Template tokens
+常用文本按图层随机生成并保留预览结果，点击“重新生成”主动更换；姓名的 132 个本地组合用尽前避免重复。数据仅用于设计占位，不代表真实联系人或企业。
 
-| Token | Meaning | Example |
-| --- | --- | --- |
-| `{n}` | Number with zero padding | `01` |
-| `{i}` | Plain 1-based index | `1` |
-| `{old}` | Original layer name | `Rectangle 1` |
-| `{type}` | Host-reported layer type | `FRAME` |
-| `{date}` | Selected date using the chosen date format | `2025-06-10` |
+## 文件
 
-## Notes
+`manifest.json`、`code.js`、`ui.html`、`icon.png`、`icon.svg`、`README.md`、`CHANGELOG.md`。发布平台的展示图标需在发布表单中上传 icon.png。
 
-- This folder is the MasterGo version. There is no Figma build in this first release.
-- The plugin tries `mg`, then `mastergo`, then `figma` as the host object for MasterGo compatibility.
-- Selection access checks `host.document.currentPage.selection`, `host.currentPage.selection`, `host.selection`, and `host.getSelection()`.
-- Duplicate generated names are allowed, but the UI warns before applying.
-- Version tag: `layer-renamer-mastergo-v1.0.0`.
+## 验证与限制
+
+已完成脚本语法、DOM 交互及模拟宿主检查，覆盖模式切换、参数启用、随机预览、拖拽插入、字体加载失败和选择变化。尚未完成真实宿主中的端到端验证；建议先使用单一样式文字图层，混合样式替换后的分段格式需确认。字体缺失或字体 API 不可用时会显示失败原因。

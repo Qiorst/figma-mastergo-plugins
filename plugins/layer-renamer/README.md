@@ -1,25 +1,19 @@
-# Layer Renamer
+# 多功能命名
 
-Layer Renamer batch-renames selected design layers with template tokens, numbering, and a live preview before applying changes.
+为图层名称提供模板生成与结构化编辑，为文字图层提供模板生成与常用文本随机填充。当前版本：1.1.0。
 
-## Versions
-
-| Platform | Import Manifest | Notes |
+| 平台 | 导入入口 | 发布标签 |
 | --- | --- | --- |
-| MasterGo | `plugins/layer-renamer/layer-renamer-mastergo/manifest.json` | First release. Uses MasterGo-compatible host detection and selection access. |
+| MasterGo | `layer-renamer-mastergo/manifest.json` | `layer-renamer-mastergo-v1.1.0` |
+| Figma | `layer-renamer-figma/manifest.json` | `layer-renamer-figma-v1.1.0` |
 
-## Features
+两个平台分别打包发布，安装时选择对应目录中的 manifest.json；详见各平台 README。
 
-- Preview selected layer names before changing them.
-- Rename multiple selected layers in one action.
-- Build names with text blocks plus `{date}`, `{n}`, `{i}`, `{old}`, and `{type}` tokens.
-- Build templates from draggable blocks, with click-to-insert tokens and removable blocks.
-- Explain which form fields feed each template token.
-- Configure numbering start and zero-padding width.
-- Choose a date and date format for date-based layer names.
-- Open in Chinese by default with an in-panel Chinese/English switch.
-- Show useful diagnostics when the host or selection shape differs.
+- 支持自定义文字、编号、日期、原内容及图层类型。
+- 支持按分隔符保留、替换、删除、插入和编号名称字段。
+- 文本模式提供姓名、脱敏手机号、示例邮箱、公司和地址参数。
+- 参数可点击追加或拖拽插入，预览后批量应用。
+- 日期和编号设置随模板参数启用，支持中文/英文切换。
+- 常用文本使用本地占位数据；文本写入前加载字体并反馈失败原因。
 
-## Version Tags
-
-- `layer-renamer-mastergo-v1.0.0`
+真实宿主端到端测试尚未完成，混合样式文字请先在副本中确认。

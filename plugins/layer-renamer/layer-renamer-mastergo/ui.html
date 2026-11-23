@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>图层批量命名</title>
+  <title>多功能命名</title>
   <style>
     :root {
       color-scheme: light;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       font-size: 12px;
       line-height: 1.4;
-      color: #222;
-      background: #f7f7f5;
+      color: #242936;
+      background: #f5f6f9;
     }
 
     * {
@@ -33,7 +33,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: #f7f7f5;
+      background: #f5f6f9;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -53,7 +53,7 @@
       flex-direction: column;
       gap: 12px;
       min-height: 100vh;
-      padding: 14px 14px 76px;
+      padding: 18px 16px 84px;
     }
 
     .topbar {
@@ -72,25 +72,25 @@
     h1 {
       margin: 0;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: 600;
       letter-spacing: 0;
     }
 
     .status {
-      border: 1px solid #d8d7d0;
-      border-radius: 8px;
+      border: 1px solid #e3e7ee;
+      border-radius: 12px;
       background: #fff;
       padding: 10px;
     }
 
     .status-title {
-      font-weight: 700;
+      font-weight: 600;
       margin-bottom: 3px;
     }
 
     .status-detail,
     .diagnostics {
-      color: #66645d;
+      color: #737c8d;
     }
 
     .diagnostics {
@@ -102,7 +102,7 @@
 
     .pill {
       border-radius: 999px;
-      background: #eeeeea;
+      background: #f0f2f6;
       padding: 3px 7px;
       white-space: nowrap;
     }
@@ -110,10 +110,104 @@
     .panel {
       display: grid;
       gap: 10px;
-      border: 1px solid #d8d7d0;
-      border-radius: 8px;
+      border: 1px solid #e3e7ee;
+      border-radius: 12px;
       background: #fff;
       padding: 12px;
+    }
+
+    .mode-content { display: grid; gap: 14px; min-width: 0; }
+    .secondary-tabs { background: #f0f2f6; }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      border: 1px solid #e3e7ee;
+      border-radius: 9px;
+      background: #f0f2f6;
+      padding: 3px;
+    }
+
+    .mode-button {
+      min-height: 32px;
+      border: 0;
+      background: transparent;
+      color: #737c8d;
+    }
+
+    .mode-button.active {
+      background: #fff;
+      color: #202635;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .structure-summary {
+      display: block;
+      border-radius: 9px;
+      background: #f4f6f9;
+      padding: 9px;
+      color: #606b7e;
+    }
+
+    .structure-mode-link {
+      display: inline;
+      min-height: 0;
+      border: 0;
+      border-radius: 2px;
+      padding: 0;
+      background: transparent;
+      color: #485ec4;
+      font: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .structure-mode-link:hover { background: transparent; color: #3c52cc; }
+
+    .structure-summary strong {
+      color: #242936;
+    }
+
+    .field-editor {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field-rule {
+      display: grid;
+      grid-template-columns: minmax(70px, 0.75fr) minmax(92px, 0.9fr) minmax(0, 1.35fr);
+      gap: 8px;
+      align-items: center;
+      border-bottom: 1px solid #f0f2f6;
+      padding-bottom: 8px;
+    }
+
+    .field-rule:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .field-label {
+      min-width: 0;
+      font-weight: 600;
+    }
+
+    .field-sample {
+      display: block;
+      overflow: hidden;
+      color: #7a8495;
+      font-size: 11px;
+      font-weight: 400;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .field-value-placeholder {
+      min-height: 32px;
     }
 
     .grid-two {
@@ -126,17 +220,17 @@
       display: grid;
       gap: 5px;
       min-width: 0;
-      font-weight: 650;
+      font-weight: 600;
     }
 
     input,
     select {
       width: 100%;
       min-height: 32px;
-      border: 1px solid #c9c7bf;
-      border-radius: 6px;
+      border: 1px solid #dce1ea;
+      border-radius: 8px;
       background: #fff;
-      color: #222;
+      color: #242936;
       padding: 6px 8px;
       outline: none;
     }
@@ -147,8 +241,59 @@
 
     input:focus,
     select:focus {
-      border-color: #3366ff;
+      border-color: #4b65e9;
       box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.14);
+    }
+
+    .date-field { display: grid; gap: 7px; min-width: 0; }
+    .date-field > .field-title { color: #606b7e; font-size: 11px; font-weight: 500; }
+    .date-inputs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .date-inputs > * { min-width: 0; }
+
+    .date-control {
+      position: relative;
+    }
+
+    .date-control::after {
+      content: "";
+      position: absolute;
+      right: 11px;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      border: 2px solid #242936;
+      border-radius: 2px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    .date-control::before {
+      content: "";
+      position: absolute;
+      right: 14px;
+      top: calc(50% - 4px);
+      width: 7px;
+      height: 2px;
+      background: #242936;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .date-control:focus-within .date-display-input {
+      border-color: #4b65e9;
+      box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.14);
+    }
+
+    .date-display-input {
+      padding-right: 34px;
+    }
+
+    .date-native-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
     }
 
     select option {
@@ -168,10 +313,10 @@
       justify-content: space-between;
       width: 100%;
       min-height: 32px;
-      border: 1px solid #c9c7bf;
-      border-radius: 6px;
+      border: 1px solid #dce1ea;
+      border-radius: 8px;
       background: #fff;
-      color: #222;
+      color: #242936;
       padding: 6px 8px;
       font-weight: 400;
       text-align: left;
@@ -197,7 +342,7 @@
     }
 
     .custom-select.open .custom-select-button {
-      border-color: #3366ff;
+      border-color: #4b65e9;
       box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.14);
     }
 
@@ -207,8 +352,8 @@
       right: 0;
       top: calc(100% + 4px);
       display: none;
-      border: 1px solid #b8b8b2;
-      border-radius: 8px;
+      border: 1px solid #e0e5ee;
+      border-radius: 12px;
       background: #fff;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
       padding: 6px;
@@ -223,10 +368,10 @@
     .custom-option {
       min-height: 36px;
       border: 0;
-      border-radius: 6px;
+      border-radius: 8px;
       background: #fff;
       padding: 8px 10px;
-      color: #222;
+      color: #242936;
       font-weight: 400;
       text-align: left;
     }
@@ -236,20 +381,20 @@
     }
 
     .custom-option.selected {
-      background: #1f5eff;
+      background: #4b65e9;
       color: #fff;
     }
 
     .hint {
-      color: #77746d;
+      color: #7a8495;
       font-weight: 400;
     }
 
     .field-title {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      justify-content: flex-start;
+      gap: 5px;
     }
 
     .section-title {
@@ -259,13 +404,32 @@
       gap: 8px;
     }
 
+    .template-title-main {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .template-drag-hint {
+      display: none;
+      color: #7a8495;
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1.3;
+    }
+
+    .template-drag-hint.visible {
+      display: inline;
+    }
+
     .link-button {
       min-height: 24px;
       border: 0;
       background: transparent;
-      color: #1f5eff;
+      color: #4b65e9;
       padding: 0 2px;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     .link-button:hover {
@@ -279,11 +443,11 @@
       min-height: 20px;
       border-radius: 999px;
       background: #eef2ff;
-      color: #2447b8;
+      color: #485ec4;
       padding: 2px 7px;
       font-family: "SFMono-Regular", Consolas, monospace;
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 600;
       white-space: nowrap;
     }
 
@@ -291,7 +455,7 @@
       display: grid;
       gap: 8px;
       border: 1px solid #e0e4f7;
-      border-radius: 8px;
+      border-radius: 12px;
       background: #f7f9ff;
       padding: 10px;
     }
@@ -307,16 +471,12 @@
       align-items: center;
       gap: 8px;
       min-height: 44px;
-      border: 1px dashed #bfc8ee;
-      border-radius: 8px;
+      border: 1px dashed #cdd6f3;
+      border-radius: 12px;
       background: #fbfcff;
       padding: 8px;
     }
 
-    .template-board.empty::before {
-      content: attr(data-placeholder);
-      color: #9a9a92;
-    }
 
     .template-block {
       position: relative;
@@ -324,25 +484,25 @@
       align-items: center;
       max-width: 100%;
       min-height: 30px;
-      border: 1px solid #c8d2ff;
-      border-radius: 7px;
+      border: 1px solid #dce3ff;
+      border-radius: 9px;
       background: #eef2ff;
-      color: #2447b8;
+      color: #485ec4;
       padding: 6px 24px 6px 9px;
-      font-weight: 700;
+      font-weight: 600;
       user-select: none;
       cursor: grab;
     }
 
     .template-block.text {
-      border-color: #dedbd0;
-      background: #f4f3ef;
-      color: #3d3b36;
-      font-weight: 650;
+      border-color: #e1e5ed;
+      background: #f4f6f9;
+      color: #455065;
+      font-weight: 600;
     }
 
     .template-block.text.editing {
-      border-color: #1f5eff;
+      border-color: #4b65e9;
       background: #fff;
       box-shadow: 0 0 0 2px rgba(31, 94, 255, 0.14);
       cursor: text;
@@ -361,7 +521,7 @@
       bottom: -5px;
       width: 3px;
       border-radius: 999px;
-      background: #1f5eff;
+      background: #4b65e9;
       box-shadow: 0 0 0 3px rgba(31, 94, 255, 0.14);
     }
 
@@ -393,7 +553,7 @@
       width: 18px;
       min-height: 18px;
       height: 18px;
-      border: 1px solid #c9c7bf;
+      border: 1px solid #dce1ea;
       border-radius: 50%;
       background: #fff;
       color: #555;
@@ -410,8 +570,8 @@
     }
 
     .token-help-title {
-      color: #444b63;
-      font-weight: 700;
+      color: #606d85;
+      font-weight: 600;
     }
 
     .token-buttons {
@@ -422,11 +582,11 @@
 
     .token-button {
       min-height: 28px;
-      border-color: #c8d2ff;
+      border-color: #dce3ff;
       background: #fff;
-      color: #2447b8;
+      color: #485ec4;
       padding: 4px 8px;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     .token-button code {
@@ -439,7 +599,7 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       column-gap: 2px;
       row-gap: 6px;
-      color: #555b70;
+      color: #778195;
     }
 
     .token-map-item {
@@ -457,9 +617,9 @@
     }
 
     .example {
-      border-radius: 6px;
+      border-radius: 8px;
       background: #fff;
-      color: #444b63;
+      color: #606d85;
       padding: 7px 8px;
     }
 
@@ -471,7 +631,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      border-top: 1px solid #d8d7d0;
+      border-top: 1px solid #e3e7ee;
       background: rgba(247, 247, 245, 0.96);
       padding: 10px 14px 12px;
       backdrop-filter: blur(8px);
@@ -480,12 +640,12 @@
 
     button {
       min-height: 34px;
-      border: 1px solid #c9c7bf;
-      border-radius: 6px;
+      border: 1px solid #dce1ea;
+      border-radius: 8px;
       background: #fff;
-      color: #222;
+      color: #242936;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     button:hover {
@@ -493,13 +653,13 @@
     }
 
     button.primary {
-      border-color: #1f5eff;
-      background: #1f5eff;
+      border-color: #4b65e9;
+      background: #4b65e9;
       color: #fff;
     }
 
     button.primary:hover {
-      background: #174dda;
+      background: #3c52cc;
     }
 
     button:disabled {
@@ -516,16 +676,16 @@
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      color: #66645d;
-      font-weight: 700;
+      color: #737c8d;
+      font-weight: 600;
     }
 
     .list {
       display: grid;
       max-height: 214px;
       overflow: auto;
-      border: 1px solid #d8d7d0;
-      border-radius: 8px;
+      border: 1px solid #e3e7ee;
+      border-radius: 12px;
       background: #fff;
     }
 
@@ -536,7 +696,7 @@
       align-items: center;
       min-height: 38px;
       padding: 8px;
-      border-bottom: 1px solid #eeeeea;
+      border-bottom: 1px solid #f0f2f6;
     }
 
     .row:last-child {
@@ -551,22 +711,22 @@
     }
 
     .old {
-      color: #66645d;
+      color: #737c8d;
     }
 
     .next {
-      color: #111;
-      font-weight: 700;
+      color: #202635;
+      font-weight: 600;
     }
 
     .arrow {
-      color: #9b988f;
+      color: #a7afbd;
       text-align: center;
     }
 
     .warning {
       display: none;
-      border-radius: 6px;
+      border-radius: 8px;
       background: #fff4d6;
       color: #704600;
       padding: 8px;
@@ -575,12 +735,94 @@
     .warning.visible {
       display: block;
     }
+
+    /* Shared visual treatment; markup and naming behavior stay platform-specific. */
+    :root { line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .shell { gap: 14px; }
+    .topbar { min-height: 34px; padding: 0 2px 2px; }
+    h1 { font-size: 17px; letter-spacing: -0.4px; }
+    .top-actions { gap: 6px; }
+    .top-actions button { padding: 0 12px; }
+    .language-select { width: 82px; }
+    .status { padding: 12px 14px; box-shadow: 0 2px 6px rgba(30, 45, 80, 0.025); }
+    .status-title { color: #35415b; margin-bottom: 4px; }
+    .status-detail { font-size: 11px; line-height: 1.6; }
+    .diagnostics { gap: 4px; margin-top: 9px; font-size: 10px; }
+    .pill { border-radius: 5px; padding: 2px 6px; background: #f2f4f8; color: #7a8495; }
+    .panel { gap: 14px; padding: 14px; box-shadow: 0 3px 12px rgba(30, 45, 80, 0.025); }
+    .mode-switch { padding: 4px; border: 0; background: #e9edf4; border-radius: 11px; }
+    .mode-button { border-radius: 8px; font-weight: 500; }
+    .mode-button.active { color: #485ec4; box-shadow: 0 2px 5px rgba(40, 55, 90, 0.08); font-weight: 600; }
+    .section-title { min-height: 26px; margin-bottom: 8px; font-weight: 600; }
+    .template-drag-hint { font-size: 10px; }
+    .template-title-main { flex-wrap: wrap; gap: 2px 8px; }
+    .template-board { min-height: 58px; padding: 12px; background: #fafbff; border-radius: 10px; }
+    .template-board.empty { justify-content: center; }
+    .template-board.empty::before { content: attr(data-placeholder); color: #929bad; font-size: 11px; text-align: center; font-weight: 400; }
+    .template-block { box-shadow: 0 1px 2px rgba(50, 70, 120, 0.04); }
+    .remove-block { color: #7a8495; border-color: #dce3f0; }
+    .remove-block:hover { color: #b74453; background: #fff3f4; border-color: #edcbd0; }
+    .hint { display: block; font-size: 11px; line-height: 1.6; }
+    .template-builder + .hint { margin-top: 8px; }
+    .token-help { gap: 10px; padding: 12px; border-color: #e7ebf5; background: #f8f9fd; border-radius: 10px; }
+    .token-help-title { font-size: 11px; font-weight: 500; }
+    .token-buttons { gap: 6px; }
+    .token-button[draggable="true"] { cursor: grab; }
+    .token-button.dragging { opacity: 0.45; cursor: grabbing; }
+    .template-board.drag-over { border-color: #4b65e9; background: #f0f3ff; }
+    .token-button { max-width: 100%; text-align: left; line-height: 1.6; }
+    .token-button { min-height: 28px; padding: 4px 7px; font-size: 11px; border-color: #e0e5f2; }
+    .token-button:hover { background: #edf1ff; border-color: #bdc9f7; }
+    .token-badge { min-height: 18px; border-radius: 5px; padding: 1px 5px; font-size: 10px; font-weight: 500; }
+    .token-map { row-gap: 8px; font-size: 10px; column-gap: 8px; }
+    .example { padding: 8px 10px; border: 1px solid #e9edf5; font-family: Consolas, "Microsoft YaHei", monospace; font-size: 11px; overflow-wrap: anywhere; }
+    label { gap: 7px; color: #606b7e; font-size: 11px; font-weight: 500; }
+    input, select, .custom-select-button { min-height: 34px; color: #35415b; font-size: 12px; font-weight: 400; }
+    input::placeholder { color: #9aa3b3; }
+    input[readonly]:not(.date-display-input) { background: #f5f7fa; color: #7a8495; }
+    input:hover, select:hover, .custom-select-button:hover { border-color: #b9c4d8; background: #fff; }
+    .date-control::after { border-color: #8490a5; border-width: 1.5px; }
+    .date-control::before { background: #8490a5; height: 1.5px; }
+    .custom-select-button::after { width: 6px; height: 6px; border-width: 1.5px; border-color: #8490a5; }
+    .custom-options { padding: 4px; box-shadow: 0 8px 24px rgba(30, 45, 80, 0.12); }
+    .custom-option.selected { background: #edf1ff; color: #485ec4; font-weight: 600; }
+    button { font-weight: 500; padding-left: 12px; padding-right: 12px; }
+    button, input, select { transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease; }
+    button:hover { background: #f6f8fc; border-color: #bcc7da; }
+    button:focus-visible { outline: 2px solid #4b65e9; outline-offset: 2px; }
+    button:disabled { opacity: 1; background: #f0f2f6; color: #9aa3b3; border-color: #e4e8ef; }
+    button.primary { box-shadow: 0 3px 7px rgba(75, 101, 233, 0.18); font-weight: 600; }
+    button.primary:disabled { background: #cbd3f5; border-color: #cbd3f5; color: #fff; box-shadow: none; }
+    .link-button { padding: 0 2px; font-size: 11px; }
+    .link-button:hover { border-color: transparent; background: transparent; }
+    .actions { padding: 12px 16px 14px; gap: 10px; background: rgba(255, 255, 255, 0.94); border-color: #e3e7ee; box-shadow: 0 -4px 16px rgba(30, 45, 80, 0.03); }
+    .actions button { min-height: 38px; border-radius: 9px; }
+    .preview-header { padding: 0 2px; color: #606b7e; font-size: 11px; }
+    #previewCount { font-weight: 400; color: #8a94a5; font-variant-numeric: tabular-nums; }
+    .row { padding: 10px 12px; min-height: 42px; border-color: #f0f2f6; font-size: 11px; }
+    .row:hover { background: #fafbfe; }
+    .next { color: #485ec4; font-weight: 500; }
+    .structure-summary { background: #f5f7fc; padding: 12px; font-size: 11px; }
+    .field-rule { padding-bottom: 10px; }
+    .warning { border: 1px solid #f5e6c4; background: #fffaed; color: #956e2d; font-size: 11px; padding: 10px 12px; }
+    @media (prefers-reduced-motion: reduce) { button, input, select { transition: none; } }
+    .parameter-disabled > .field-title { opacity: 0.5; }
+    .parameter-disabled input:disabled,
+    .parameter-disabled .custom-select-button:disabled {
+      background: #f0f2f6;
+      color: #9aa3b3;
+      border-color: #e4e8ef;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .parameter-disabled .date-control::before,
+    .parameter-disabled .date-control::after { opacity: 0.4; }
   </style>
 </head>
 <body>
   <main class="shell">
     <div class="topbar">
-      <h1 data-i18n="appTitle">图层批量命名</h1>
+      <h1 data-i18n="appTitle">多功能命名</h1>
       <div class="top-actions">
         <select id="languageSelect" class="language-select" aria-label="Language">
           <option value="zh">中文</option>
@@ -590,84 +832,120 @@
       </div>
     </div>
 
+    <div class="mode-switch target-switch" role="group" aria-label="操作对象">
+      <button id="nameTargetButton" class="mode-button active" type="button" data-i18n="nameTarget">图层名称</button>
+      <button id="textTargetButton" class="mode-button" type="button" data-i18n="textTarget">文本内容</button>
+    </div>
+
     <section class="status" aria-live="polite">
       <div class="status-title" id="statusTitle">正在读取选择</div>
       <div class="status-detail" id="statusDetail">等待 MasterGo...</div>
       <div class="diagnostics" id="diagnostics"></div>
     </section>
 
-    <section class="panel">
-      <label>
+    <div class="panel naming-panel">
+    <div id="editModeSwitch" class="mode-switch secondary-tabs" role="tablist">
+      <button id="templateModeButton" class="mode-button active" type="button" data-mode="template" data-i18n="templateMode">生成命名</button>
+      <button id="structureModeButton" class="mode-button" type="button" data-mode="structure" data-i18n="structureMode">编辑现有结构</button>
+    </div>
+
+    <section id="templatePanel" class="mode-content">
+      <div>
         <span class="section-title">
-          <span data-i18n="template">命名模板</span>
+          <span class="template-title-main">
+            <span data-i18n="template">命名模板</span>
+            <span id="templateDragHint" class="template-drag-hint" data-i18n="dragHint">鼠标长按拖拽标签可调整位置</span>
+          </span>
           <button id="clearTemplateButton" class="link-button" type="button" data-i18n="clearTemplate">清空模板</button>
         </span>
         <div class="template-builder">
-          <div id="templateBoard" class="template-board empty" data-placeholder="请从下方选择参数模板"></div>
+          <div id="templateBoard" class="template-board empty" data-placeholder="请从下方输入添加文本或点击参数模板添加"></div>
           <div class="text-adder">
             <input id="addTextInput" type="text" value="" autocomplete="off">
             <button id="addTextButton" type="button" data-i18n="addText">添加文本</button>
           </div>
         </div>
-        <span class="hint" data-i18n="templateHint">模板里的参数会从下方表单自动取值。</span>
-      </label>
+      </div>
 
       <div class="token-help">
-        <div class="token-help-title" data-i18n="tokenHelpTitle">点击参数可插入到模板</div>
         <div class="token-buttons">
-          <button class="token-button" type="button" data-token="{n}"><code>{n}</code> <span data-i18n="tokenNumberShort">编号</span></button>
-          <button class="token-button" type="button" data-token="{old}"><code>{old}</code> <span data-i18n="tokenOldShort">原名</span></button>
-          <button class="token-button" type="button" data-token="{i}"><code>{i}</code> <span data-i18n="tokenIndexShort">顺序</span></button>
-          <button class="token-button" type="button" data-token="{type}"><code>{type}</code> <span data-i18n="tokenTypeShort">类型</span></button>
-          <button class="token-button" type="button" data-token="{date}"><code>{date}</code> <span data-i18n="tokenDateShort">日期</span></button>
-        </div>
-        <div class="token-map">
-          <div class="token-map-item"><span class="token-badge">{n}</span> <span data-i18n="tokenNumberMap">来自“起始编号”和“编号位数”</span></div>
-          <div class="token-map-item"><span class="token-badge">{old}</span> <span data-i18n="tokenOldMap">来自当前图层原名</span></div>
-          <div class="token-map-item"><span class="token-badge">{i}</span> <span data-i18n="tokenIndexMap">来自当前选择顺序</span></div>
-          <div class="token-map-item"><span class="token-badge">{type}</span> <span data-i18n="tokenTypeMap">来自图层类型</span></div>
-          <div class="token-map-item"><span class="token-badge">{date}</span> <span data-i18n="tokenDateMap">来自下方日期设置</span></div>
+          <button class="token-button" type="button" data-token="{n}"><code>{n}</code> <span data-i18n="tokenNumberMap">来自“起始编号”和“编号位数”</span></button>
+          <button class="token-button" type="button" data-token="{old}"><code>{old}</code> <span data-i18n="tokenOldMap">来自当前图层原名</span></button>
+          <button class="token-button" type="button" data-token="{i}"><code>{i}</code> <span data-i18n="tokenIndexMap">来自当前选择顺序</span></button>
+          <button class="token-button" type="button" data-token="{type}"><code>{type}</code> <span data-i18n="tokenTypeMap">来自图层类型</span></button>
+          <button class="token-button" type="button" data-token="{date}"><code>{date}</code> <span data-i18n="tokenDateMap">来自下方日期设置</span></button>
         </div>
         <div class="example" id="templateExample"></div>
-      </div>
 
-      <div class="grid-two">
-        <label>
-          <span class="field-title"><span data-i18n="dateValue">日期</span><span class="token-badge">{date}</span></span>
-          <input id="dateInput" type="date">
-        </label>
-        <label>
-          <span data-i18n="dateFormat">日期格式</span>
+      <div class="date-field" role="group" aria-labelledby="dateFieldTitle">
+          <span class="field-title"><span class="token-badge">{date}</span><span id="dateFieldTitle" data-i18n="dateValue">日期</span></span>
+        <div class="grid-two date-inputs">
+          <div class="date-control">
+            <input id="dateDisplayInput" class="date-display-input" type="text" readonly aria-hidden="true" tabindex="-1">
+            <input id="dateInput" class="date-native-input" type="date" aria-label="Date">
+          </div>
           <div id="dateFormatSelect" class="custom-select" data-value="zh">
-            <button id="dateFormatButton" class="custom-select-button" type="button">2025年06月10日</button>
+            <button id="dateFormatButton" aria-label="日期格式 / Date format" class="custom-select-button" type="button">YYYY年MM月DD日</button>
             <div class="custom-options">
-              <button class="custom-option selected" type="button" data-date-format="zh">2025年06月10日</button>
-              <button class="custom-option" type="button" data-date-format="dash">2025-06-10</button>
-              <button class="custom-option" type="button" data-date-format="slash">2025/06/10</button>
-              <button class="custom-option" type="button" data-date-format="compact">20250610</button>
+              <button class="custom-option selected" type="button" data-date-format="zh">YYYY年MM月DD日</button>
+              <button class="custom-option" type="button" data-date-format="dash">YYYY-MM-DD</button>
+              <button class="custom-option" type="button" data-date-format="slash">YYYY/MM/DD</button>
+              <button class="custom-option" type="button" data-date-format="compact">YYYYMMDD</button>
             </div>
           </div>
-        </label>
+        </div>
       </div>
 
       <div class="grid-two">
         <label>
-          <span class="field-title"><span data-i18n="startNumber">起始编号</span><span class="token-badge">{n}</span></span>
+          <span class="field-title"><span class="token-badge">{n}</span><span data-i18n="startNumber">起始编号</span></span>
           <input id="startInput" type="number" value="1" min="0" step="1">
         </label>
         <label>
-          <span class="field-title"><span data-i18n="numberWidth">编号位数</span><span class="token-badge">{n}</span></span>
+          <span class="field-title"><span class="token-badge">{n}</span><span data-i18n="numberWidth">编号位数</span></span>
           <input id="paddingInput" type="number" value="2" min="1" max="6" step="1">
         </label>
       </div>
-
-      <div class="warning" id="warning"></div>
-
-      <div class="actions">
-        <button id="resetButton" type="button" data-i18n="resetForm">重置表单</button>
-        <button id="applyButton" class="primary" type="button" disabled data-i18n="applyNames">应用命名</button>
       </div>
+
+      <div id="commonTextPanel" class="token-help hidden">
+        <div class="section-title"><span data-i18n="commonText">常用文本</span><button id="shuffleTextButton" class="link-button" type="button" data-i18n="shuffleText">重新生成</button></div>
+        <div class="token-buttons"><button class="token-button" type="button" data-token="{person}"><code>{person}</code> <span data-i18n="sample_person">姓名</span></button><button class="token-button" type="button" data-token="{phone}"><code>{phone}</code> <span data-i18n="sample_phone">手机号</span></button><button class="token-button" type="button" data-token="{email}"><code>{email}</code> <span data-i18n="sample_email">邮箱</span></button><button class="token-button" type="button" data-token="{company}"><code>{company}</code> <span data-i18n="sample_company">公司名称</span></button><button class="token-button" type="button" data-token="{address}"><code>{address}</code> <span data-i18n="sample_address">地址</span></button></div>
+      </div>
+
+
     </section>
+
+    <section id="structurePanel" class="mode-content hidden">
+      <div class="grid-two">
+        <label>
+          <span data-i18n="separator">字段分隔符</span>
+          <select id="separatorSelect">
+            <option value="auto" data-i18n="separatorAuto">自动检测</option>
+            <option value="/">/</option>
+            <option value="-">-</option>
+            <option value="_">_</option>
+            <option value=".">.</option>
+            <option value="space" data-i18n="separatorSpace">空格</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="detectedSeparator">检测结果</span>
+          <input id="detectedSeparatorInput" type="text" readonly>
+        </label>
+      </div>
+      <div id="structureSummary" class="structure-summary"></div>
+      <div id="fieldEditor" class="field-editor"></div>
+    </section>
+
+    </div>
+
+    <div class="warning" id="warning"></div>
+
+    <div class="actions">
+      <button id="resetButton" type="button" data-i18n="resetForm">重置表单</button>
+      <button id="applyButton" class="primary" type="button" disabled data-i18n="applyNames">应用命名</button>
+    </div>
 
     <section class="preview">
       <div class="preview-header">
@@ -681,12 +959,50 @@
   <script>
     var messages = {
       zh: {
-        appTitle: "图层批量命名",
+        nameTarget: "图层名称",
+        textTarget: "文本内容",
+        commonText: "常用文本",
+        shuffleText: "重新生成",
+        sample_person: "姓名",
+        sample_phone: "手机号",
+        sample_email: "邮箱",
+        sample_company: "公司名称",
+        sample_address: "地址",
+        generateText: "生成内容",
+        applyText: "应用内容",
+        originalText: "来自原文本内容",
+        textSelected: "已选择 {selected} 个图层，其中 {count} 个文字图层可填充；其他图层跳过。",
+        textApplied: "已更新 {count} 个文字图层{failed}",
+        textEmpty: "请选择文字图层，添加文本或拖入常用参数后预览。",
+        appTitle: "多功能命名",
         refresh: "刷新",
+        templateMode: "生成命名",
+        structureMode: "编辑现有结构",
+        separator: "字段分隔符",
+        separatorAuto: "自动检测",
+        separatorSpace: "空格",
+        detectedSeparator: "检测结果",
+        noSeparator: "未检测到",
+        structureHint: "仅处理与主要结构字段数量一致的图层，异常图层会被跳过。",
+        structureSummary: "主要结构：{fields} 个字段 · 可处理 {valid} 个 · 跳过 {invalid} 个",
+        structureUnavailable: "名称中包含至少一个指定分隔符即可识别结构（如“按钮/默认”）；若尚无结构，请先用“{generateNames}”为待修改图层添加带分隔符的名称，再回到“编辑现有结构”进行修改。",
+        fieldNumber: "字段 {number}",
+        keepField: "保持",
+        replaceField: "替换",
+        deleteField: "删除",
+        numberField: "编号",
+        insertBeforeField: "前面插入",
+        insertAfterField: "后面插入",
+        replacePlaceholder: "替换文字",
+        insertPlaceholder: "新字段文字",
+        structureSkipped: "结构不一致，跳过",
+        noStructureWarning: "没有可按当前结构处理的图层。",
+        noStructureChangeWarning: "请至少修改、删除或编号一个字段。",
         template: "命名模板",
         clearTemplate: "清空模板",
+        dragHint: "鼠标长按拖拽标签可调整位置",
         templateHint: "模板里的参数会从下方表单自动取值。",
-        templateBoardPlaceholder: "请从下方选择参数模板",
+        templateBoardPlaceholder: "请从下方输入添加文本或点击参数模板添加",
         addText: "添加文本",
         textPlaceholder: "输入固定文本，例如 - 或 _",
         textBlockLabel: "文本",
@@ -739,12 +1055,50 @@
         defaultTemplate: ""
       },
       en: {
-        appTitle: "Layer Renamer",
+        nameTarget: "Layer names",
+        textTarget: "Text content",
+        commonText: "Sample content",
+        shuffleText: "Regenerate",
+        sample_person: "Name",
+        sample_phone: "Phone",
+        sample_email: "Email",
+        sample_company: "Company",
+        sample_address: "Address",
+        generateText: "Generate content",
+        applyText: "Apply content",
+        originalText: "uses the original text",
+        textSelected: "{selected} layers selected; {count} text layers ready. Other layers are skipped.",
+        textApplied: "Updated {count} text layers{failed}",
+        textEmpty: "Select text layers and add text or sample parameters to preview.",
+        appTitle: "多功能命名",
         refresh: "Refresh",
+        templateMode: "Generate Names",
+        structureMode: "Edit Structure",
+        separator: "Field separator",
+        separatorAuto: "Auto detect",
+        separatorSpace: "Space",
+        detectedSeparator: "Detected",
+        noSeparator: "Not detected",
+        structureHint: "Only layers matching the dominant field count are changed. Other layers are skipped.",
+        structureSummary: "Main structure: {fields} fields · {valid} ready · {invalid} skipped",
+        structureUnavailable: "Names containing at least one selected separator are recognized as structured (e.g. “Button/Default”); if your layers have no structure yet, first use {generateNames} to name them with a separator, then return to Edit Existing Structure.",
+        fieldNumber: "Field {number}",
+        keepField: "Keep",
+        replaceField: "Replace",
+        deleteField: "Delete",
+        numberField: "Number",
+        insertBeforeField: "Insert Before",
+        insertAfterField: "Insert After",
+        replacePlaceholder: "Replacement text",
+        insertPlaceholder: "New field text",
+        structureSkipped: "Structure mismatch, skipped",
+        noStructureWarning: "No layers match the current structure.",
+        noStructureChangeWarning: "Change, delete, or number at least one field.",
         template: "Template",
         clearTemplate: "Clear Template",
+        dragHint: "Press and hold a tag, then drag to reorder.",
         templateHint: "Template tokens use values from the fields below.",
-        templateBoardPlaceholder: "Choose template parts below",
+        templateBoardPlaceholder: "Add text using the input below or click a template parameter",
         addText: "Add Text",
         textPlaceholder: "Static text, such as - or _",
         textBlockLabel: "Text",
@@ -800,6 +1154,12 @@
 
     var state = {
       language: "zh",
+      target: "name",
+      applying: false,
+      targetTemplates: { name: [], text: [] },
+      sampleRows: {},
+      previousSampleRows: {},
+      mode: "template",
       layers: [],
       hostName: "unknown",
       selectionCount: 0,
@@ -810,19 +1170,34 @@
       canPostMessage: true,
       templateBlocks: [],
       draggedBlockId: null,
+      draggedToken: null,
+      suppressTokenClick: false,
       dropTargetId: null,
-      dropSide: "after"
+      dropSide: "after",
+      detectedSeparator: "",
+      structureFieldCount: 0,
+      structureRules: []
     };
 
     var elements = {
       languageSelect: document.getElementById("languageSelect"),
+      templateModeButton: document.getElementById("templateModeButton"),
+      structureModeButton: document.getElementById("structureModeButton"),
+      templatePanel: document.getElementById("templatePanel"),
+      structurePanel: document.getElementById("structurePanel"),
+      separatorSelect: document.getElementById("separatorSelect"),
+      detectedSeparatorInput: document.getElementById("detectedSeparatorInput"),
+      structureSummary: document.getElementById("structureSummary"),
+      fieldEditor: document.getElementById("fieldEditor"),
       statusTitle: document.getElementById("statusTitle"),
       statusDetail: document.getElementById("statusDetail"),
       diagnostics: document.getElementById("diagnostics"),
       templateBoard: document.getElementById("templateBoard"),
+      templateDragHint: document.getElementById("templateDragHint"),
       clearTemplateButton: document.getElementById("clearTemplateButton"),
       addTextInput: document.getElementById("addTextInput"),
       addTextButton: document.getElementById("addTextButton"),
+      dateDisplayInput: document.getElementById("dateDisplayInput"),
       dateInput: document.getElementById("dateInput"),
       dateFormatSelect: document.getElementById("dateFormatSelect"),
       dateFormatButton: document.getElementById("dateFormatButton"),
@@ -939,7 +1314,7 @@
     }
 
     function replaceAllTokens(template, tokens) {
-      return String(template || "").replace(/\{n\}|\{i\}|\{old\}|\{type\}|\{date\}/g, function (token) {
+      return String(template || "").replace(/\{n\}|\{i\}|\{old\}|\{type\}|\{date\}|\{person\}|\{phone\}|\{email\}|\{company\}|\{address\}/g, function (token) {
         return tokens[token] || "";
       });
     }
@@ -950,18 +1325,178 @@
       var tokens = {
         "{n}": number,
         "{i}": plainIndex,
-        "{old}": layer.name || "",
+        "{old}": state.target === "text" ? layer.characters || "" : layer.name || "",
         "{type}": layer.type || "",
         "{date}": formatDate(options.dateValue, options.dateFormat)
       };
+      if (state.target === "text") Object.assign(tokens, sampleValues(layer.id));
       var name = replaceAllTokens(options.template, tokens);
 
-      return sanitizePreviewName(name);
+      return state.target === "text" ? name : sanitizePreviewName(name);
+    }
+
+    function getSeparator() {
+      var selected = elements.separatorSelect.value;
+      if (selected !== "auto") {
+        return selected === "space" ? " " : selected;
+      }
+
+      var candidates = ["/", "_", "-", ".", " "];
+      var best = "";
+      var bestScore = 0;
+      candidates.forEach(function (separator) {
+        var counts = {};
+        state.layers.forEach(function (layer) {
+          if (!layer.canRename || String(layer.name || "").indexOf(separator) < 0) {
+            return;
+          }
+          var count = String(layer.name || "").split(separator).length;
+          counts[count] = (counts[count] || 0) + 1;
+        });
+        Object.keys(counts).forEach(function (count) {
+          var score = counts[count] * 100 + Number(count);
+          if (score > bestScore) {
+            bestScore = score;
+            best = separator;
+          }
+        });
+      });
+      return best;
+    }
+
+    function analyzeStructure() {
+      var separator = getSeparator();
+      var countFrequency = {};
+      var parsed = state.layers.map(function (layer) {
+        var fields = separator ? String(layer.name || "").split(separator) : [];
+        if (layer.canRename && fields.length > 1) {
+          countFrequency[fields.length] = (countFrequency[fields.length] || 0) + 1;
+        }
+        return { layer: layer, fields: fields };
+      });
+      var fieldCount = 0;
+      var frequency = 0;
+      Object.keys(countFrequency).forEach(function (count) {
+        if (countFrequency[count] > frequency || (countFrequency[count] === frequency && Number(count) > fieldCount)) {
+          frequency = countFrequency[count];
+          fieldCount = Number(count);
+        }
+      });
+      return {
+        separator: separator,
+        fieldCount: fieldCount,
+        items: parsed,
+        validCount: parsed.filter(function (item) {
+          return item.layer.canRename && item.fields.length === fieldCount && fieldCount > 1;
+        }).length
+      };
+    }
+
+    function syncStructureRules(fieldCount) {
+      if (state.structureFieldCount === fieldCount && state.structureRules.length === fieldCount) {
+        return;
+      }
+      state.structureFieldCount = fieldCount;
+      state.structureRules = Array.from({ length: fieldCount }, function () {
+        return { action: "keep", value: "" };
+      });
+    }
+
+    function buildStructureName(fields, itemIndex) {
+      var output = [];
+      state.structureRules.forEach(function (rule, index) {
+        if (rule.action === "delete") {
+          return;
+        }
+        if (rule.action === "insert-before") {
+          output.push(rule.value);
+          output.push(fields[index] || "");
+          return;
+        }
+        if (rule.action === "insert-after") {
+          output.push(fields[index] || "");
+          output.push(rule.value);
+          return;
+        }
+        if (rule.action === "replace") {
+          output.push(rule.value);
+          return;
+        }
+        if (rule.action === "number") {
+          output.push(String(clampInteger(elements.startInput.value, 0, 999999, 1) + itemIndex).padStart(clampInteger(elements.paddingInput.value, 1, 6, 2), "0"));
+          return;
+        }
+        output.push(fields[index] || "");
+      });
+      return sanitizePreviewName(output.join(state.detectedSeparator));
+    }
+
+    function renderStructureEditor(analysis) {
+      state.detectedSeparator = analysis.separator;
+      syncStructureRules(analysis.fieldCount);
+      elements.detectedSeparatorInput.value = analysis.separator === " " ? t("separatorSpace") : (analysis.separator || t("noSeparator"));
+
+      if (!analysis.fieldCount) {
+        elements.structureSummary.innerHTML = escapeHtml(t("structureUnavailable")).replace("{generateNames}",
+          '<button type="button" class="structure-mode-link">' + escapeHtml(t("templateMode")) + '</button>');
+        elements.structureSummary.querySelector(".structure-mode-link").addEventListener("click", function () {
+          setMode("template");
+          elements.templateModeButton.focus();
+        });
+        elements.fieldEditor.innerHTML = "";
+        return;
+      }
+
+      elements.structureSummary.innerHTML = "<strong>" + escapeHtml(t("structureSummary", {
+        fields: analysis.fieldCount,
+        valid: analysis.validCount,
+        invalid: state.layers.length - analysis.validCount
+      })) + "</strong>";
+
+      var sample = analysis.items.find(function (item) { return item.fields.length === analysis.fieldCount; });
+      elements.fieldEditor.innerHTML = state.structureRules.map(function (rule, index) {
+        return [
+          '<div class="field-rule" data-field-index="' + index + '">',
+          '<div class="field-label">' + escapeHtml(t("fieldNumber", { number: index + 1 })) + '<span class="field-sample" title="' + escapeHtml(sample ? sample.fields[index] : "") + '">' + escapeHtml(sample ? sample.fields[index] : "") + "</span></div>",
+          '<select class="field-action" data-field-action="' + index + '">',
+          '<option value="keep"' + (rule.action === "keep" ? " selected" : "") + '>' + escapeHtml(t("keepField")) + "</option>",
+          '<option value="replace"' + (rule.action === "replace" ? " selected" : "") + '>' + escapeHtml(t("replaceField")) + "</option>",
+          '<option value="delete"' + (rule.action === "delete" ? " selected" : "") + '>' + escapeHtml(t("deleteField")) + "</option>",
+          '<option value="number"' + (rule.action === "number" ? " selected" : "") + '>' + escapeHtml(t("numberField")) + "</option>",
+          '<option value="insert-before"' + (rule.action === "insert-before" ? " selected" : "") + '>' + escapeHtml(t("insertBeforeField")) + "</option>",
+          '<option value="insert-after"' + (rule.action === "insert-after" ? " selected" : "") + '>' + escapeHtml(t("insertAfterField")) + "</option>",
+          "</select>",
+          rule.action === "replace" || rule.action === "insert-before" || rule.action === "insert-after"
+            ? '<input class="field-value" data-field-value="' + index + '" value="' + escapeHtml(rule.value) + '" placeholder="' + escapeHtml(t(rule.action === "replace" ? "replacePlaceholder" : "insertPlaceholder")) + '">'
+            : '<span class="field-value-placeholder"></span>',
+          "</div>"
+        ].join("");
+      }).join("");
+
+      Array.prototype.slice.call(elements.fieldEditor.querySelectorAll("[data-field-action]")).forEach(function (select) {
+        select.addEventListener("change", function () {
+          state.structureRules[Number(select.getAttribute("data-field-action"))].action = select.value;
+          renderPreview();
+        });
+      });
+      Array.prototype.slice.call(elements.fieldEditor.querySelectorAll("[data-field-value]")).forEach(function (input) {
+        input.addEventListener("input", function () {
+          state.structureRules[Number(input.getAttribute("data-field-value"))].value = input.value;
+          renderPreview(true);
+        });
+      });
+    }
+
+    function renderDateDisplay() {
+      var dateValue = elements.dateInput.value || getTodayValue();
+      var dateFormat = elements.dateFormatSelect.getAttribute("data-value") || "zh";
+      elements.dateDisplayInput.value = formatDate(dateValue, dateFormat);
     }
 
     function renderTemplateBlocks() {
       elements.templateBoard.className = state.templateBlocks.length ? "template-board" : "template-board empty";
       elements.templateBoard.setAttribute("data-placeholder", t("templateBoardPlaceholder"));
+      elements.templateDragHint.className = state.templateBlocks.length ? "template-drag-hint visible" : "template-drag-hint";
 
       elements.templateBoard.innerHTML = state.templateBlocks.map(function (block) {
         var isToken = block.kind === "token";
@@ -989,9 +1524,6 @@
 
       Array.prototype.slice.call(elements.templateBoard.querySelectorAll("[data-block-id]")).forEach(function (blockElement) {
         blockElement.addEventListener("dragstart", handleBlockDragStart);
-        blockElement.addEventListener("dragover", handleBlockDragOver);
-        blockElement.addEventListener("dragleave", handleBlockDragLeave);
-        blockElement.addEventListener("drop", handleBlockDrop);
         blockElement.addEventListener("dragend", handleBlockDragEnd);
       });
 
@@ -1087,6 +1619,7 @@
         return;
       }
 
+      state.draggedToken = null;
       state.draggedBlockId = event.currentTarget.getAttribute("data-block-id");
       event.currentTarget.classList.add("dragging");
 
@@ -1096,37 +1629,59 @@
       }
     }
 
-    function handleBlockDragOver(event) {
-      event.preventDefault();
-      if (event.dataTransfer) {
-        event.dataTransfer.dropEffect = "move";
-      }
-      if (event.currentTarget.getAttribute("data-block-id") !== state.draggedBlockId) {
-        showDropPreview(event.currentTarget, getDropSide(event, event.currentTarget));
-      } else {
-        clearDropPreview();
-      }
+    function getBoardDropTarget(event) {
+      var nearest = null;
+      var distance = Infinity;
+      Array.prototype.forEach.call(elements.templateBoard.querySelectorAll("[data-block-id]"), function (element) {
+        var rect = element.getBoundingClientRect();
+        var dx = Math.max(rect.left - event.clientX, 0, event.clientX - rect.right);
+        var dy = Math.max(rect.top - event.clientY, 0, event.clientY - rect.bottom);
+        var score = dx * dx + dy * dy;
+        if (score < distance) {
+          distance = score;
+          nearest = element;
+        }
+      });
+      if (!nearest) return null;
+      var rect = nearest.getBoundingClientRect();
+      var side = event.clientY < rect.top ? "before"
+        : event.clientY > rect.bottom ? "after" : getDropSide(event, nearest);
+      return { element: nearest, id: nearest.getAttribute("data-block-id"), side: side };
     }
 
-    function handleBlockDragLeave(event) {
-      var nextTarget = event.relatedTarget;
-      if (!event.currentTarget.contains(nextTarget)) {
-        event.currentTarget.classList.remove("drop-before");
-        event.currentTarget.classList.remove("drop-after");
-      }
-    }
-
-    function handleBlockDrop(event) {
+    function handleBoardDragOver(event) {
+      if (!state.draggedToken && !state.draggedBlockId) return;
       event.preventDefault();
-      var targetId = event.currentTarget.getAttribute("data-block-id");
-      var side = targetId === state.dropTargetId ? state.dropSide : getDropSide(event, event.currentTarget);
+      if (event.dataTransfer) event.dataTransfer.dropEffect = state.draggedToken ? "copy" : "move";
+      elements.templateBoard.classList.add("drag-over");
+      var target = getBoardDropTarget(event);
       clearDropPreview();
-      moveTemplateBlock(state.draggedBlockId, targetId, side);
+      if (target && target.id !== state.draggedBlockId) showDropPreview(target.element, target.side);
+    }
+
+    function handleBoardDrop(event) {
+      if (!state.draggedToken && !state.draggedBlockId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      var target = getBoardDropTarget(event);
+      clearDropPreview();
+      elements.templateBoard.classList.remove("drag-over");
+      if (state.draggedToken) {
+        var index = target ? state.templateBlocks.findIndex(function (block) { return block.id === target.id; }) : state.templateBlocks.length;
+        if (target && target.side === "after") index += 1;
+        state.templateBlocks.splice(index, 0, { id: makeBlockId(), kind: "token", value: state.draggedToken });
+        state.draggedToken = null;
+        renderPreview();
+      } else if (target) {
+        moveTemplateBlock(state.draggedBlockId, target.id, target.side);
+      }
     }
 
     function handleBlockDragEnd(event) {
       event.currentTarget.classList.remove("dragging");
       clearDropPreview();
+      elements.templateBoard.classList.remove("drag-over");
+      state.draggedToken = null;
       state.draggedBlockId = null;
       state.dropTargetId = null;
       state.dropSide = "after";
@@ -1211,7 +1766,82 @@
       return t("fixedExample");
     }
 
+    function sampleValues(layerId) {
+      if (state.sampleRows[layerId]) return state.sampleRows[layerId];
+      var surnames = ["王", "李", "张", "刘", "陈", "杨", "赵", "黄", "周", "吴", "徐", "孙"];
+      var given = ["晓明", "思雨", "子涵", "宇航", "欣然", "晨曦", "嘉宁", "一诺", "书瑶", "浩然", "可欣"];
+      var firms = ["星河", "云杉", "远山", "青禾", "知行", "澄光", "新叶", "晨星", "向原", "蓝屿"];
+      var cities = ["浙江省杭州市西湖区", "广东省深圳市南山区", "四川省成都市武侯区", "江苏省南京市鼓楼区", "湖北省武汉市洪山区"];
+      var roads = ["文一路", "科技路", "锦绣路", "创新路", "学府路"];
+      var usedNames = Object.keys(state.sampleRows).map(function (id) { return state.sampleRows[id]["{person}"]; });
+      var previous = state.previousSampleRows[layerId];
+      var candidates = [];
+      for (var n = 0; n < surnames.length * given.length; n += 1) {
+        var candidate = surnames[n % surnames.length] + given[Math.floor(n / surnames.length)];
+        if (usedNames.indexOf(candidate) < 0 && (!previous || previous["{person}"] !== candidate)) candidates.push(n);
+      }
+      var nameIndex = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : Math.floor(Math.random() * surnames.length * given.length);
+      var k = nameIndex + Math.floor(Math.random() * 10000) * surnames.length * given.length;
+      state.sampleRows[layerId] = {
+        "{person}": surnames[k % surnames.length] + given[Math.floor(k / surnames.length) % given.length],
+        "{phone}": "138****" + String(1000 + k % 9000),
+        "{email}": "contact" + (k + 1) + "@example.com",
+        "{company}": firms[k % firms.length] + ["科技", "设计", "信息", "文化", "商贸"][Math.floor(k / firms.length) % 5] + "有限公司",
+        "{address}": cities[k % cities.length] + roads[k % roads.length] + (88 + k % 900) + "号"
+      };
+      return state.sampleRows[layerId];
+    }
+
+    function updateTargetUI() {
+      var isText = state.target === "text";
+      document.getElementById("nameTargetButton").classList.toggle("active", !isText);
+      document.getElementById("textTargetButton").classList.toggle("active", isText);
+      document.getElementById("editModeSwitch").classList.toggle("hidden", isText);
+      document.getElementById("commonTextPanel").classList.toggle("hidden", !isText);
+      elements.applyButton.textContent = t(isText ? "applyText" : "applyNames");
+      document.querySelector('[data-i18n="template"]').textContent = t(isText ? "generateText" : "template");
+      document.querySelector('[data-i18n="tokenOldMap"]').textContent = t(isText ? "originalText" : "tokenOldMap");
+    }
+
+    function setTarget(target) {
+      if (state.applying || target === state.target) return;
+      state.targetTemplates[state.target] = state.templateBlocks;
+      state.target = target;
+      state.templateBlocks = state.targetTemplates[target];
+      state.statusMode = "selection";
+      setMode("template");
+      updateTargetUI();
+      renderStatus({});
+    }
+
     function getPreviewItems() {
+      if (state.target === "text") {
+        var options = readOptions();
+        return state.layers.filter(function (layer) { return layer.canEditText; }).map(function (layer, index) {
+          return { id: layer.id, index: layer.index, oldName: layer.characters || "", type: layer.type,
+            canRename: true, name: buildName(layer, index, options) };
+        });
+      }
+      if (state.mode === "structure") {
+        var analysis = analyzeStructure();
+        var validIndex = 0;
+        return analysis.items.map(function (entry) {
+          var valid = entry.layer.canRename && analysis.fieldCount > 1 && entry.fields.length === analysis.fieldCount;
+          var name = valid ? buildStructureName(entry.fields, validIndex) : entry.layer.name;
+          if (valid) {
+            validIndex += 1;
+          }
+          return {
+            id: entry.layer.id,
+            index: entry.layer.index,
+            oldName: entry.layer.name || "",
+            type: entry.layer.type || "",
+            canRename: valid,
+            skipped: entry.layer.canRename && !valid,
+            name: name
+          };
+        });
+      }
       var options = readOptions();
       return state.layers.map(function (layer, index) {
         return {
@@ -1232,7 +1862,7 @@
       elements.diagnostics.innerHTML = [
         t("host") + ": " + (message.hostName || state.hostName || "unknown"),
         t("selected") + ": " + state.selectionCount,
-        t("renameable") + ": " + state.renameableCount,
+        (state.target === "text" ? t("textTarget") : t("renameable")) + ": " + (state.target === "text" ? state.layers.filter(function (layer) { return layer.canEditText; }).length : state.renameableCount),
         t("postMessage") + ": " + (state.canPostMessage === false ? t("no") : t("yes"))
       ].map(function (text) {
         return '<span class="pill">' + escapeHtml(text) + "</span>";
@@ -1241,6 +1871,7 @@
 
     function getStatusTitle() {
       if (state.statusMode === "applied") {
+        if (state.target === "text") return state.language === "zh" ? (state.failedCount ? "内容更新完成，部分失败" : "内容更新完成") : (state.failedCount ? "Content updated with issues" : "Content updated");
         return state.failedCount ? t("applyErrorTitle") : t("applyCompleteTitle");
       }
 
@@ -1256,6 +1887,10 @@
     }
 
     function getStatusDetail() {
+      if (state.target === "text") {
+        if (state.statusMode === "applied") return t("textApplied", { count: state.renamed, failed: state.failedCount ? t("failedSuffix", { failed: state.failedCount }) : "" });
+        return t("textSelected", { selected: state.selectionCount, count: state.layers.filter(function (layer) { return layer.canEditText; }).length });
+      }
       if (state.statusMode === "applied") {
         return t("applyDetail", {
           renamed: state.renamed,
@@ -1277,7 +1912,30 @@
       });
     }
 
-    function renderPreview() {
+    function syncParameterControls() {
+      var template = getTemplateString();
+      var hasDate = template.indexOf("{date}") >= 0;
+      var hasNumber = template.indexOf("{n}") >= 0;
+      elements.dateInput.disabled = !hasDate;
+      elements.dateDisplayInput.disabled = !hasDate;
+      elements.dateFormatButton.disabled = !hasDate;
+      elements.dateInput.closest(".date-field").classList.toggle("parameter-disabled", !hasDate);
+      elements.startInput.disabled = !hasNumber;
+      elements.paddingInput.disabled = !hasNumber;
+      elements.startInput.closest("label").classList.toggle("parameter-disabled", !hasNumber);
+      elements.paddingInput.closest("label").classList.toggle("parameter-disabled", !hasNumber);
+      if (!hasDate) closeDateFormatMenu();
+    }
+
+    function renderPreview(preserveStructureEditor) {
+      syncParameterControls();
+      renderDateDisplay();
+
+      var analysis = state.mode === "structure" ? analyzeStructure() : null;
+      if (analysis && !preserveStructureEditor) {
+        renderStructureEditor(analysis);
+      }
+
       var items = getPreviewItems();
       var renameableItems = items.filter(function (item) {
         return item.canRename;
@@ -1285,8 +1943,11 @@
       var names = {};
       var duplicateCount = 0;
 
-      renderTemplateBlocks();
-      elements.templateExample.textContent = buildExampleText();
+      if (state.mode === "template") {
+        renderTemplateBlocks();
+        elements.templateExample.textContent = buildExampleText();
+        elements.templateExample.classList.toggle("hidden", state.target === "text");
+      }
 
       renameableItems.forEach(function (item) {
         if (names[item.name]) {
@@ -1296,13 +1957,19 @@
       });
 
       elements.previewCount.textContent = renameableItems.length + " " + t(renameableItems.length === 1 ? "layerSingular" : "layerPlural");
-      elements.applyButton.disabled = renameableItems.length === 0 || !getTemplateString();
+      var hasStructureChange = state.structureRules.some(function (rule) {
+        if (rule.action === "replace" || rule.action === "insert-before" || rule.action === "insert-after") {
+          return String(rule.value || "").trim().length > 0;
+        }
+        return rule.action !== "keep";
+      });
+      elements.applyButton.disabled = state.applying || renameableItems.length === 0 || (state.mode === "template" ? !getTemplateString() : !hasStructureChange);
 
       if (!items.length) {
         elements.previewList.innerHTML = '<div class="row"><span class="old">' + escapeHtml(t("noSelectedLayers")) + '</span><span></span><span class="next">' + escapeHtml(t("refreshAfterSelect")) + '</span></div>';
       } else {
         elements.previewList.innerHTML = items.map(function (item) {
-          var nextName = item.canRename ? item.name : t("cannotRename");
+          var nextName = item.canRename ? item.name : (item.skipped ? t("structureSkipped") : t("cannotRename"));
           return [
             '<div class="row">',
             '<span class="old" title="' + escapeHtml(item.oldName) + '">' + escapeHtml(item.oldName || t("untitled")) + "</span>",
@@ -1313,8 +1980,12 @@
         }).join("");
       }
 
-      if (!getTemplateString()) {
-        showWarning(t("emptyTemplateWarning"));
+      if (state.mode === "structure" && !renameableItems.length) {
+        showWarning(t("noStructureWarning"));
+      } else if (state.mode === "structure" && !hasStructureChange) {
+        showWarning(t("noStructureChangeWarning"));
+      } else if (state.mode === "template" && !getTemplateString()) {
+        showWarning(t(state.target === "text" ? "textEmpty" : "emptyTemplateWarning"));
       } else if (duplicateCount) {
         showWarning(t("duplicateWarning", { count: duplicateCount }));
       } else {
@@ -1340,6 +2011,8 @@
     }
 
     function applyRenames() {
+      if (state.applying) return;
+      state.applying = true;
       var items = getPreviewItems().filter(function (item) {
         return item.canRename;
       }).map(function (item) {
@@ -1352,13 +2025,20 @@
 
       elements.applyButton.disabled = true;
       post({
-        type: "apply-renames",
+        type: state.target === "text" ? "apply-text" : "apply-renames",
         requestId: Date.now(),
         items: items
       });
     }
 
     function resetForm() {
+      if (state.mode === "structure") {
+        state.structureRules = state.structureRules.map(function () { return { action: "keep", value: "" }; });
+        elements.separatorSelect.value = "auto";
+        state.structureFieldCount = 0;
+        renderPreview();
+        return;
+      }
       state.templateBlocks = [];
       elements.addTextInput.value = "";
       elements.dateInput.value = getTodayValue();
@@ -1375,7 +2055,7 @@
 
     function getDateFormatLabel(value) {
       var option = elements.dateFormatSelect.querySelector('[data-date-format="' + value + '"]');
-      return option ? option.textContent : "2025年06月10日";
+      return option ? option.textContent : "YYYY年MM月DD日";
     }
 
     function setDateFormat(value) {
@@ -1384,6 +2064,7 @@
       Array.prototype.slice.call(elements.dateFormatSelect.querySelectorAll("[data-date-format]")).forEach(function (option) {
         option.classList.toggle("selected", option.getAttribute("data-date-format") === value);
       });
+      renderDateDisplay();
       renderPreview();
     }
 
@@ -1392,6 +2073,7 @@
     }
 
     function toggleDateFormatMenu() {
+      if (elements.dateFormatButton.disabled) return;
       elements.dateFormatSelect.classList.toggle("open");
     }
 
@@ -1406,6 +2088,7 @@
     }
 
     function handleApplyResult(message) {
+      state.applying = false;
       if (message.selection) {
         state.layers = Array.isArray(message.selection.layers) ? message.selection.layers : [];
         state.hostName = message.selection.hostName || "unknown";
@@ -1421,6 +2104,7 @@
       state.renamed = message.renamed || 0;
       state.failedCount = Array.isArray(message.failed) ? message.failed.length : 0;
       renderStatus({});
+      if (message.failed && message.failed.length) showWarning(message.failed.map(function (item) { return item.reason; }).filter(function (reason, index, all) { return all.indexOf(reason) === index; }).join(" "));
     }
 
     function applyLanguage() {
@@ -1437,6 +2121,15 @@
       });
 
       renderStatus({});
+      renderPreview();
+    }
+
+    function setMode(mode) {
+      state.mode = mode === "structure" ? "structure" : "template";
+      elements.templateModeButton.classList.toggle("active", state.mode === "template");
+      elements.structureModeButton.classList.toggle("active", state.mode === "structure");
+      elements.templatePanel.classList.toggle("hidden", state.mode !== "template");
+      elements.structurePanel.classList.toggle("hidden", state.mode !== "structure");
       renderPreview();
     }
 
@@ -1460,11 +2153,19 @@
 
     [
       elements.startInput,
-      elements.paddingInput,
-      elements.dateInput
+      elements.paddingInput
     ].forEach(function (element) {
       element.addEventListener("input", renderPreview);
       element.addEventListener("change", renderPreview);
+    });
+
+    elements.dateInput.addEventListener("input", function () {
+      renderDateDisplay();
+      renderPreview();
+    });
+    elements.dateInput.addEventListener("change", function () {
+      renderDateDisplay();
+      renderPreview();
     });
 
     elements.refreshButton.addEventListener("click", function () {
@@ -1475,6 +2176,12 @@
 
     elements.resetButton.addEventListener("click", resetForm);
     elements.applyButton.addEventListener("click", applyRenames);
+    elements.templateModeButton.addEventListener("click", function () { setMode("template"); });
+    elements.structureModeButton.addEventListener("click", function () { setMode("structure"); });
+    elements.separatorSelect.addEventListener("change", function () {
+      state.structureFieldCount = 0;
+      renderPreview();
+    });
     elements.clearTemplateButton.addEventListener("click", clearTemplate);
     elements.dateFormatButton.addEventListener("click", function (event) {
       event.stopPropagation();
@@ -1495,17 +2202,49 @@
         addTextBlockFromInput();
       }
     });
+    elements.templateBoard.addEventListener("dragover", handleBoardDragOver);
+    elements.templateBoard.addEventListener("drop", handleBoardDrop);
+    elements.templateBoard.addEventListener("dragleave", function (event) {
+      if (!elements.templateBoard.contains(event.relatedTarget)) {
+        clearDropPreview();
+        elements.templateBoard.classList.remove("drag-over");
+      }
+    });
     Array.prototype.slice.call(document.querySelectorAll("[data-token]")).forEach(function (button) {
-      button.addEventListener("click", function () {
-        insertToken(button.getAttribute("data-token"));
+      button.setAttribute("draggable", "true");
+      button.addEventListener("dragstart", function (event) {
+        state.draggedBlockId = null;
+        state.draggedToken = button.getAttribute("data-token");
+        state.suppressTokenClick = true;
+        button.classList.add("dragging");
+        if (event.dataTransfer) {
+          event.dataTransfer.effectAllowed = "copy";
+          event.dataTransfer.setData("text/plain", state.draggedToken);
+        }
       });
+      button.addEventListener("dragend", function (event) {
+        handleBlockDragEnd(event);
+        setTimeout(function () { state.suppressTokenClick = false; }, 0);
+      });
+      button.addEventListener("click", function () {
+        if (!state.suppressTokenClick) insertToken(button.getAttribute("data-token"));
+      });
+    });
+    document.getElementById("nameTargetButton").addEventListener("click", function () { setTarget("name"); });
+    document.getElementById("textTargetButton").addEventListener("click", function () { setTarget("text"); });
+    document.getElementById("shuffleTextButton").addEventListener("click", function () {
+      state.previousSampleRows = state.sampleRows;
+      state.sampleRows = {};
+      renderPreview();
     });
     elements.languageSelect.addEventListener("change", function () {
       state.language = elements.languageSelect.value === "en" ? "en" : "zh";
       applyLanguage();
+      updateTargetUI();
     });
 
     applyLanguage();
+    updateTargetUI();
     post({ type: "refresh-selection" });
   </script>
 </body>

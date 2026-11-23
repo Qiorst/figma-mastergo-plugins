@@ -1,0 +1,8 @@
+{
+  "name": "多功能命名",
+  "id": "layer-renamer-figma",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"]
+}
